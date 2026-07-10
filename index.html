@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="West Matrimony - Find your perfect life partner. Premium matchmaking service for verified profiles. Connect, chat, and find love.">
+    <title>West Matrimony - Premium Matchmaking & Marriage Services</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="index.css">
+    
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="app-header">
+        <div class="header-container">
+            <a href="#" class="logo-container" id="nav-logo" onclick="event.preventDefault(); switchView('landing')">
+                <span class="logo-icon">
+                    <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                </span>
+                <span class="logo-text">Just <span class="accent-text">Matrimony</span></span>
+            </a>
+            
+            <nav class="main-nav" id="app-nav-menu">
+                <ul class="nav-list">
+                    <li><a href="#" class="nav-link active" id="nav-link-home" onclick="event.preventDefault(); handleNavClick('landing')">Home</a></li>
+                    <li><a href="#" class="nav-link hidden-auth" id="nav-link-dashboard" onclick="event.preventDefault(); handleNavClick('dashboard')">Dashboard</a></li>
+                    <li><a href="#" class="nav-link" id="nav-link-browse" onclick="event.preventDefault(); handleNavClick('browse')">Browse Matches</a></li>
+                    <li><a href="#" class="nav-link hidden-auth" id="nav-link-shortlist" onclick="event.preventDefault(); handleNavClick('shortlist')">Shortlist & Chats</a></li>
+                    <li><a href="#" class="nav-link hidden" id="nav-link-admin" onclick="event.preventDefault(); switchView('admin')">Admin Panel</a></li>
+                </ul>
+            </nav>
+
+            <div class="auth-action-area" id="header-auth-area">
+                <button class="btn btn-outline" id="btn-header-login" onclick="switchView('auth', 'login')">Login</button>
+                <button class="btn btn-primary" id="btn-header-register" onclick="switchView('auth', 'register')">Register Free</button>
+            </div>
+            
+            <!-- Logged In User Profile Chip (Initially Hidden) -->
+            <div class="user-profile-chip hidden" id="header-user-chip">
+                <div class="user-chip-info" onclick="toggleDropdown('user-dropdown-menu')">
+                    <img src="assets/images/profile_male_1.png" alt="User Photo" class="user-chip-avatar" id="header-user-avatar">
+                    <span class="user-chip-name" id="header-user-name">Guest</span>
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="chevron-icon">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <div class="dropdown-menu hidden" id="user-dropdown-menu">
+                    <a href="#" onclick="event.preventDefault(); openMyProfile()" id="dropdown-link-profile">My Profile</a>
+                    <hr>
+                    <a href="#" onclick="event.preventDefault(); handleLogout()" class="logout-link" id="dropdown-link-logout">Logout</a>
+                </div>
+            </div>
+
+            <!-- Mobile Menu Toggle Button -->
+            <button class="mobile-menu-toggle" id="btn-mobile-toggle" onclick="toggleMobileMenu()">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container for Single Page Views -->
+    <main class="main-content">
+        
+        <!-- 1. LANDING VIEW -->
+        <section class="view-section active" id="landing-view">
+            <!-- Hero Banner -->
+            <div class="hero-section">
+                <div class="hero-overlay"></div>
+                <div class="hero-content-wrapper">
+                    <div class="hero-text">
+                        <span class="badge" id="hero-badge">No. 1 Trusted Matchmaking Service</span>
+                        <h1 class="hero-title" id="hero-main-title">Crafting Perfect Matches, Creating Forever Stories</h1>
+                        <p class="hero-subtitle">Find a life partner who shares your values, culture, and aspirations. Explore verified profiles with complete privacy control.</p>
+                        <div class="hero-cta-group">
+                            <button class="btn btn-primary btn-large" id="btn-hero-start" onclick="switchView('auth', 'register')">Get Started For Free</button>
+                            <button class="btn btn-secondary btn-large" id="btn-hero-browse" onclick="switchView('browse')">Browse Profiles</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Search Panel -->
+                    <div class="quick-search-panel" id="hero-search-panel">
+                        <h3 class="panel-title">Quick Partner Search</h3>
+                        <form id="landing-quick-search-form" onsubmit="handleQuickSearch(event)">
+                            <div class="form-row">
+                                <div class="form-group col">
+                                    <label for="search-gender">Looking for a</label>
+                                    <select class="form-control" id="search-gender">
+                                        <option value="female">Bride (Woman)</option>
+                                        <option value="male">Groom (Man)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col">
+                                    <label for="search-age-min">Age</label>
+                                    <div class="range-group">
+                                        <select class="form-control" id="search-age-min">
+                                            <option value="20">20</option>
+                                            <option value="22" selected>22</option>
+                                            <option value="25">25</option>
+                                            <option value="28">28</option>
+                                        </select>
+                                        <span class="range-to">to</span>
+                                        <select class="form-control" id="search-age-max">
+                                            <option value="28">28</option>
+                                            <option value="30" selected>30</option>
+                                            <option value="33">33</option>
+                                            <option value="38">38</option>
+                                            <option value="45">45</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col">
+                                    <label for="search-religion">Religion</label>
+                                    <select class="form-control" id="search-religion">
+                                        <option value="all">Any Religion</option>
+                                        <option value="Christian">Christian</option>
+                                        <option value="Hindu">Hindu</option>
+                                        <option value="Muslim">Muslim</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col">
+                                    <label for="search-location">Location</label>
+                                    <select class="form-control" id="search-location">
+                                        <option value="all">Any Location</option>
+                                        <option value="Kochi">Kochi</option>
+                                        <option value="Mumbai">Mumbai</option>
+                                        <option value="Bangalore">Bangalore</option>
+                                        <option value="Chennai">Chennai</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block btn-search" id="btn-quick-search-submit">
+                                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                                Search Matches
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="stats-section">
+                <div class="container">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-icon pink-bg">
+                                <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                </svg>
+                            </span>
+                            <h3 class="stat-number">100% Verified</h3>
+                            <p class="stat-label">Profiles checked manually by government ID verification</p>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon gold-bg">
+                                <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                            </span>
+                            <h3 class="stat-number">15,000+ Success</h3>
+                            <p class="stat-label">Happy couples united through West Matrimony</p>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon purple-bg">
+                                <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                            </span>
+                            <h3 class="stat-number">Privacy Guard</h3>
+                            <p class="stat-label">Full control over who sees your photos and contact info</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured Profiles Grid -->
+            <div class="featured-section">
+                <div class="container">
+                    <div class="section-header-centered">
+                        <span class="section-subtitle">Meet Our Members</span>
+                        <h2 class="section-title">Recently Joined Verified Profiles</h2>
+                        <p class="section-description">A snapshot of some of our premium profiles. Join us to view detailed descriptions and connect with them.</p>
+                    </div>
+                    
+                    <div class="profiles-grid-row" id="featured-profiles-container">
+                        <!-- Filled by JS -->
+                    </div>
+                    
+                    <div class="centered-action-btn">
+                        <button class="btn btn-secondary btn-large" id="btn-featured-view-all" onclick="switchView('browse')">View All Matching Profiles</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Success Stories -->
+            <div class="success-stories-section">
+                <div class="container">
+                    <div class="section-header-centered">
+                        <span class="section-subtitle">Happy Beginnings</span>
+                        <h2 class="section-title">Success Stories from West Matrimony</h2>
+                        <p class="section-description">Real couples who found their perfect match through our platform.</p>
+                    </div>
+                    
+                    <div class="stories-grid">
+                        <div class="story-card">
+                            <div class="story-image-placeholder couple-1"></div>
+                            <div class="story-body">
+                                <h4 class="story-names">Sarah & Rohit</h4>
+                                <p class="story-text">"We matched in August and immediately felt a connection. Our values on career and family aligned perfectly. Thank you West Matrimony for helping us find each other!"</p>
+                                <span class="story-date">Married - Jan 2026</span>
+                            </div>
+                        </div>
+                        <div class="story-card">
+                            <div class="story-image-placeholder couple-2"></div>
+                            <div class="story-body">
+                                <h4 class="story-names">Meera & Ashwin</h4>
+                                <p class="story-text">"The advanced filters made it so easy. I was looking for a vegetarian, software professional based in Bangalore, and Ashwin was my first suggestion. Absolutely recommend this service!"</p>
+                                <span class="story-date">Married - April 2026</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. AUTHENTICATION VIEW (LOGIN & SIGN UP) -->
+        <section class="view-section hidden" id="auth-view">
+            <div class="auth-card-container">
+                <div class="auth-card">
+                    <div class="auth-tabs">
+                        <button class="auth-tab-btn active" id="tab-btn-login" onclick="setAuthTab('login')">Sign In</button>
+                        <button class="auth-tab-btn" id="tab-btn-register" onclick="setAuthTab('register')">Register</button>
+                    </div>
+                    
+                    <!-- Login Form Panel -->
+                    <div class="auth-form-panel" id="login-form-panel">
+                        <div class="auth-header">
+                            <h2>Welcome Back</h2>
+                            <p>Log in to access your matches, chat, and shortlist history.</p>
+                        </div>
+                        
+                        <form id="auth-login-form" onsubmit="handleLoginSubmit(event)">
+                            <div class="form-group">
+                                <label for="login-email">Registered Email Address</label>
+                                <input type="email" class="form-control" id="login-email" required placeholder="user@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="login-password">Password</label>
+                                <input type="password" class="form-control" id="login-password" required placeholder="••••••••">
+                            </div>
+                            <div class="auth-extra-actions">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="login-remember" checked>
+                                    <span class="checkmark"></span>
+                                    Keep me signed in
+                                </label>
+                                <a href="#" class="forgot-pass-link" onclick="event.preventDefault(); alert('For demo, use password: password123')">Forgot Password?</a>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block btn-auth" id="btn-login-submit">Login Account</button>
+                        </form>
+                        
+                        <div class="demo-credentials">
+                            <strong>Demo Access:</strong>
+                            <p>Email: <code>user@example.com</code> / Password: <code>password123</code></p>
+                        </div>
+                    </div>
+                    
+                    <!-- Multi-Step Registration Form Panel -->
+                    <div class="auth-form-panel hidden" id="register-form-panel">
+                        <div class="auth-header">
+                            <h2>Create Free Account</h2>
+                            <p>Join over 10,000+ single professionals looking for a partner.</p>
+                        </div>
+                        
+                        <!-- Step Progress Indicator -->
+                        <div class="step-indicator-wrapper">
+                            <div class="step-indicator active" id="indicator-step-1">
+                                <span class="step-num">1</span>
+                                <span class="step-name">Basic Info</span>
+                            </div>
+                            <div class="step-line" id="line-step-1"></div>
+                            <div class="step-indicator" id="indicator-step-2">
+                                <span class="step-num">2</span>
+                                <span class="step-name">Career/Religion</span>
+                            </div>
+                            <div class="step-line" id="line-step-2"></div>
+                            <div class="step-indicator" id="indicator-step-3">
+                                <span class="step-num">3</span>
+                                <span class="step-name">Account Setup</span>
+                            </div>
+                        </div>
+                        
+                        <form id="auth-register-form">
+                            <!-- Registration Step 1: Basic details -->
+                            <div class="register-step-slide active" id="register-slide-1">
+                                <div class="form-group">
+                                    <label for="reg-name">Full Name</label>
+                                    <input type="text" class="form-control" id="reg-name" placeholder="John Doe">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <label for="reg-gender">Gender</label>
+                                        <select class="form-control" id="reg-gender">
+                                            <option value="male">Male (Groom)</option>
+                                            <option value="female">Female (Bride)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col">
+                                        <label for="reg-dob">Date of Birth</label>
+                                        <input type="date" class="form-control" id="reg-dob" value="1998-06-15">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <label for="reg-mothertongue">Mother Tongue</label>
+                                        <select class="form-control" id="reg-mothertongue">
+                                            <option value="Malayalam">Malayalam</option>
+                                            <option value="Hindi">Hindi</option>
+                                            <option value="Tamil">Tamil</option>
+                                            <option value="Telugu">Telugu</option>
+                                            <option value="English">English</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col">
+                                        <label for="reg-phone">Phone Number</label>
+                                        <input type="tel" class="form-control" id="reg-phone" placeholder="+91 XXXXX XXXXX">
+                                    </div>
+                                </div>
+                                <div class="slide-navigation">
+                                    <button type="button" class="btn btn-primary btn-block" onclick="nextRegisterStep(2)" id="btn-reg-next-1">Next Step</button>
+                                </div>
+                            </div>
+
+                            <!-- Registration Step 2: Religion and Professional info -->
+                            <div class="register-step-slide hidden" id="register-slide-2">
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <label for="reg-religion">Religion</label>
+                                        <select class="form-control" id="reg-religion">
+                                            <option value="Christian">Christian</option>
+                                            <option value="Hindu">Hindu</option>
+                                            <option value="Muslim">Muslim</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col">
+                                        <label for="reg-caste">Caste / Sect</label>
+                                        <input type="text" class="form-control" id="reg-caste" placeholder="General, Syrian, Roman, etc.">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <label for="reg-education">Highest Education</label>
+                                        <select class="form-control" id="reg-education">
+                                            <option value="B.Tech / B.E.">B.Tech / B.E.</option>
+                                            <option value="M.Tech / M.E.">M.Tech / M.E.</option>
+                                            <option value="MBA">MBA</option>
+                                            <option value="MBBS / MD">MBBS / MD</option>
+                                            <option value="B.Com / M.Com">B.Com / M.Com</option>
+                                            <option value="PhD">PhD</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col">
+                                        <label for="reg-profession">Occupation</label>
+                                        <select class="form-control" id="reg-profession">
+                                            <option value="Software Engineer">Software Engineer</option>
+                                            <option value="Doctor">Doctor</option>
+                                            <option value="Banker">Banker</option>
+                                            <option value="UI/UX Designer">UI/UX Designer</option>
+                                            <option value="Civil Servant">Civil Servant</option>
+                                            <option value="Business Owner">Business Owner</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <label for="reg-income">Annual Income</label>
+                                        <select class="form-control" id="reg-income">
+                                            <option value="₹5 - 8 Lakhs">₹5 - 8 Lakhs</option>
+                                            <option value="₹8 - 12 Lakhs">₹8 - 12 Lakhs</option>
+                                            <option value="₹12 - 18 Lakhs">₹12 - 18 Lakhs</option>
+                                            <option value="₹18+ Lakhs">₹18+ Lakhs</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col">
+                                        <label for="reg-location">Current City</label>
+                                        <select class="form-control" id="reg-location">
+                                            <option value="Kochi">Kochi</option>
+                                            <option value="Bangalore">Bangalore</option>
+                                            <option value="Mumbai">Mumbai</option>
+                                            <option value="Chennai">Chennai</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="slide-navigation dual-btn">
+                                    <button type="button" class="btn btn-outline" onclick="prevRegisterStep(1)" id="btn-reg-prev-1">Back</button>
+                                    <button type="button" class="btn btn-primary" onclick="nextRegisterStep(3)" id="btn-reg-next-2">Next Step</button>
+                                </div>
+                            </div>
+
+                            <!-- Registration Step 3: Account security and photo -->
+                            <div class="register-step-slide hidden" id="register-slide-3">
+                                <div class="form-group">
+                                    <label for="reg-email">Email Address</label>
+                                    <input type="email" class="form-control" id="reg-email" placeholder="example@mail.com">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <label for="reg-password">Password</label>
+                                        <input type="password" class="form-control" id="reg-password" placeholder="Min 6 characters">
+                                    </div>
+                                    <div class="form-group col">
+                                        <label for="reg-confirm-password">Confirm Password</label>
+                                        <input type="password" class="form-control" id="reg-confirm-password" placeholder="Confirm password">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="checkbox-container">
+                                        <input type="checkbox" id="reg-terms" required checked>
+                                        <span class="checkmark"></span>
+                                        I agree to the Terms of Service & Privacy Policy.
+                                    </label>
+                                </div>
+                                
+                                <div class="slide-navigation dual-btn">
+                                    <button type="button" class="btn btn-outline" onclick="prevRegisterStep(2)" id="btn-reg-prev-2">Back</button>
+                                    <button type="button" class="btn btn-primary" onclick="handleRegisterSubmit(event)" id="btn-reg-finish">Create My Profile</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. CLIENT DASHBOARD VIEW (LOGGED-IN) -->
+        <section class="view-section hidden" id="dashboard-view">
+            <div class="container dashboard-container">
+                <div class="dashboard-sidebar">
+                    <div class="profile-summary-card">
+                        <div class="card-bg-decoration"></div>
+                        <img src="assets/images/profile_male_1.png" alt="My Photo" class="profile-card-avatar" id="dash-my-avatar">
+                        <h3 class="profile-card-name" id="dash-my-name">User Name</h3>
+                        <p class="profile-card-id" id="dash-my-id">ID: WM-90812</p>
+                        <div class="profile-completion">
+                            <div class="comp-label">Profile Verification: <span class="badge badge-success">Verified</span></div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                        <hr>
+                        <ul class="summary-stats-list">
+                            <li><span>Shortlisted You</span> <strong class="pink-text">14</strong></li>
+                            <li><span>Interests Received</span> <strong class="gold-text">8</strong></li>
+                            <li><span>My Shortlists</span> <strong id="dash-shortlist-count">0</strong></li>
+                        </ul>
+                        <button class="btn btn-outline btn-block" id="btn-dash-edit-profile" onclick="openMyProfile()">Edit My Profile</button>
+                    </div>
+                </div>
+                
+                <div class="dashboard-main">
+                    <div class="welcome-banner">
+                        <div class="welcome-text">
+                            <h2>Hello, <span id="dash-user-firstname">Guest</span>!</h2>
+                            <p>Here are your personalized matches for today. Your compatibility score matches their profile details.</p>
+                        </div>
+                        <div class="welcome-graphic">🎉</div>
+                    </div>
+
+                    <!-- Recommended Matches Section -->
+                    <div class="dashboard-matches-section">
+                        <div class="section-title-wrapper">
+                            <h3>Recommended Matches For You</h3>
+                            <a href="#" onclick="event.preventDefault(); switchView('browse')" class="view-all-link">View All</a>
+                        </div>
+                        <div class="recommendations-grid" id="dash-recommendations-container">
+                            <!-- Populated dynamically by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. BROWSE / SEARCH MATCHES VIEW -->
+        <section class="view-section hidden" id="browse-view">
+            <div class="container browse-layout">
+                <!-- Advanced Filtering Sidebar -->
+                <aside class="filter-sidebar">
+                    <div class="filter-header">
+                        <h3>Filter Matches</h3>
+                        <button class="btn-text-link" id="btn-reset-filters" onclick="resetFilters()">Clear All</button>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="filter-gender">Looking For</label>
+                        <select class="form-control" id="filter-gender" onchange="applyFilters()">
+                            <option value="all">All Profiles</option>
+                            <option value="female">Brides (Women)</option>
+                            <option value="male">Grooms (Men)</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Age Range</label>
+                        <div class="dual-select-row">
+                            <select class="form-control" id="filter-age-min" onchange="applyFilters()">
+                                <option value="20" selected>20 yrs</option>
+                                <option value="23">23 yrs</option>
+                                <option value="26">26 yrs</option>
+                                <option value="29">29 yrs</option>
+                            </select>
+                            <span class="range-separator">-</span>
+                            <select class="form-control" id="filter-age-max" onchange="applyFilters()">
+                                <option value="25">25 yrs</option>
+                                <option value="28">28 yrs</option>
+                                <option value="32" selected>32 yrs</option>
+                                <option value="38">38 yrs</option>
+                                <option value="45">45 yrs</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="filter-religion">Religion</label>
+                        <select class="form-control" id="filter-religion" onchange="applyFilters()">
+                            <option value="all">Any Religion</option>
+                            <option value="Christian">Christian</option>
+                            <option value="Hindu">Hindu</option>
+                            <option value="Muslim">Muslim</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="filter-location">Location / City</label>
+                        <select class="form-control" id="filter-location" onchange="applyFilters()">
+                            <option value="all">Any Location</option>
+                            <option value="Kochi">Kochi</option>
+                            <option value="Bangalore">Bangalore</option>
+                            <option value="Mumbai">Mumbai</option>
+                            <option value="Chennai">Chennai</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="filter-profession">Occupation</label>
+                        <select class="form-control" id="filter-profession" onchange="applyFilters()">
+                            <option value="all">Any Occupation</option>
+                            <option value="Software Engineer">Software Engineer</option>
+                            <option value="Doctor">Doctor</option>
+                            <option value="Banker">Banker</option>
+                            <option value="UI/UX Designer">UI/UX Designer</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="filter-mothertongue">Mother Tongue</label>
+                        <select class="form-control" id="filter-mothertongue" onchange="applyFilters()">
+                            <option value="all">Any Mother Tongue</option>
+                            <option value="Malayalam">Malayalam</option>
+                            <option value="Hindi">Hindi</option>
+                            <option value="Tamil">Tamil</option>
+                            <option value="Telugu">Telugu</option>
+                        </select>
+                    </div>
+                </aside>
+
+                <!-- Search Results Grid Area -->
+                <div class="browse-results-area">
+                    <div class="results-toolbar">
+                        <div class="search-input-wrapper">
+                            <span class="search-icon">
+                                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </span>
+                            <input type="text" class="search-text-field" id="search-keyword" placeholder="Search by name, occupation, or location..." onkeyup="applyFilters()">
+                        </div>
+                        <div class="results-count" id="browse-results-count">Showing 4 matching profiles</div>
+                    </div>
+                    
+                    <div class="results-grid" id="browse-profiles-grid">
+                        <!-- Loaded dynamically via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. PROFILE DETAIL VIEW -->
+        <section class="view-section hidden" id="detail-view">
+            <div class="container detail-container">
+                <div class="back-navigation">
+                    <button class="btn btn-outline" id="btn-back-to-browse" onclick="goBackToMatches()">
+                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        Back to Browsing
+                    </button>
+                </div>
+                
+                <div class="profile-detail-grid">
+                    <!-- Left Column: Photo and Quick Actions -->
+                    <div class="detail-card-left">
+                        <div class="detail-gallery">
+                            <img src="assets/images/profile_female_1.png" alt="Profile" class="main-gallery-image" id="detail-profile-img">
+                            <div class="verification-badge">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                                </svg>
+                                <span>Verified Member</span>
+                            </div>
+                        </div>
+                        
+                        <div class="compatibility-meter-card">
+                            <div class="meter-radial">
+                                <svg viewBox="0 0 36 36" class="circular-chart pink">
+                                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    <path class="circle" stroke-dasharray="85, 100" id="detail-compatibility-path" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    <text x="18" y="20.35" class="percentage" id="detail-compatibility-text">85%</text>
+                                </svg>
+                            </div>
+                            <div class="meter-info">
+                                <h4>Matching Score</h4>
+                                <p>Based on your criteria and partner expectations.</p>
+                            </div>
+                        </div>
+
+                        <div class="profile-quick-actions">
+                            <button class="btn btn-primary btn-block" id="btn-detail-connect" onclick="handleDetailConnect()">
+                                Send Connection Interest
+                            </button>
+                            <div class="dual-action-buttons">
+                                <button class="btn btn-outline" id="btn-detail-shortlist" onclick="handleDetailShortlist()">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" class="heart-icon">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                    </svg>
+                                    Shortlist
+                                </button>
+                                <button class="btn btn-outline" id="btn-detail-chat" onclick="handleDetailChat()">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                    </svg>
+                                    Chat Now
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column: Profile Detailed Bio -->
+                    <div class="detail-card-right">
+                        <div class="detail-name-header">
+                            <h2 class="profile-detail-fullname" id="detail-fullname">Sophia Ann Abraham</h2>
+                            <p class="profile-detail-subline"><span id="detail-primary-occupation">Software Engineer</span> • <span id="detail-primary-city">Kochi, Kerala</span></p>
+                            <span class="profile-id-tag" id="detail-profile-id">ID: WM-10294</span>
+                        </div>
+                        
+                        <!-- Navigation Tabs for Profile Sections -->
+                        <div class="profile-tabs">
+                            <button class="profile-tab-btn active" id="p-tab-btn-about" onclick="setProfileTab('about')">About</button>
+                            <button class="profile-tab-btn" id="p-tab-btn-education" onclick="setProfileTab('education')">Career & Education</button>
+                            <button class="profile-tab-btn" id="p-tab-btn-family" onclick="setProfileTab('family')">Lifestyle & Family</button>
+                            <button class="profile-tab-btn" id="p-tab-btn-preference" onclick="setProfileTab('preference')">Partner Preference</button>
+                        </div>
+                        
+                        <!-- Panel: About -->
+                        <div class="profile-panel" id="p-panel-about">
+                            <div class="panel-section">
+                                <h3>About Her</h3>
+                                <p id="detail-about-text">A cheerful, career-oriented individual who balances traditional values with a modern outlook. She loves listening to music, traveling, and exploring new cuisines.</p>
+                            </div>
+                            
+                            <div class="panel-section">
+                                <h3>Basic Information</h3>
+                                <div class="info-grid">
+                                    <div class="info-item"><span>Age</span> <strong id="detail-age">25 Years</strong></div>
+                                    <div class="info-item"><span>Height</span> <strong id="detail-height">5 ft 4 in (162 cm)</strong></div>
+                                    <div class="info-item"><span>Mother Tongue</span> <strong id="detail-mothertongue">Malayalam</strong></div>
+                                    <div class="info-item"><span>Marital Status</span> <strong id="detail-marital">Never Married</strong></div>
+                                    <div class="info-item"><span>Religion</span> <strong id="detail-religion">Christian</strong></div>
+                                    <div class="info-item"><span>Caste / Sect</span> <strong id="detail-caste">Syrian Orthodox</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Panel: Career & Education -->
+                        <div class="profile-panel hidden" id="p-panel-education">
+                            <div class="panel-section">
+                                <h3>Educational Background</h3>
+                                <div class="info-grid single-col">
+                                    <div class="info-item"><span>Highest Education</span> <strong id="detail-education">B.Tech in Computer Science</strong></div>
+                                    <div class="info-item"><span>University / College</span> <strong id="detail-college">College of Engineering Trivandrum (CET)</strong></div>
+                                </div>
+                            </div>
+                            
+                            <div class="panel-section">
+                                <h3>Professional Background</h3>
+                                <div class="info-grid">
+                                    <div class="info-item"><span>Occupation</span> <strong id="detail-occupation">Senior Software Developer</strong></div>
+                                    <div class="info-item"><span>Employed In</span> <strong id="detail-employer">Private MNC (TCS Kochi)</strong></div>
+                                    <div class="info-item"><span>Annual Income</span> <strong id="detail-income">₹12 - 15 Lakhs</strong></div>
+                                    <div class="info-item"><span>Work Location</span> <strong id="detail-work-location">Kochi, India</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Panel: Family Details -->
+                        <div class="profile-panel hidden" id="p-panel-family">
+                            <div class="panel-section">
+                                <h3>Family Background</h3>
+                                <div class="info-grid">
+                                    <div class="info-item"><span>Family Values</span> <strong id="detail-family-values">Moderate</strong></div>
+                                    <div class="info-item"><span>Family Type</span> <strong id="detail-family-type">Nuclear Family</strong></div>
+                                    <div class="info-item"><span>Father's Profession</span> <strong id="detail-father">Retired Government Officer</strong></div>
+                                    <div class="info-item"><span>Mother's Profession</span> <strong id="detail-mother">High School Teacher</strong></div>
+                                    <div class="info-item"><span>Brothers</span> <strong id="detail-brothers">1 (Married)</strong></div>
+                                    <div class="info-item"><span>Sisters</span> <strong id="detail-sisters">None</strong></div>
+                                </div>
+                            </div>
+                            
+                            <div class="panel-section">
+                                <h3>Lifestyle Details</h3>
+                                <div class="info-grid">
+                                    <div class="info-item"><span>Dietary Habits</span> <strong id="detail-diet">Non-Vegetarian</strong></div>
+                                    <div class="info-item"><span>Drinking / Smoking</span> <strong id="detail-lifestyle">No / No</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Panel: Partner Preference -->
+                        <div class="profile-panel hidden" id="p-panel-preference">
+                            <div class="panel-section">
+                                <h3>Partner Expectations</h3>
+                                <p>What she is looking for in a partner:</p>
+                                <div class="info-grid">
+                                    <div class="info-item"><span>Age Range</span> <strong id="detail-pref-age">26 - 30 Years</strong></div>
+                                    <div class="info-item"><span>Min Height</span> <strong id="detail-pref-height">5 ft 7 in (170 cm)</strong></div>
+                                    <div class="info-item"><span>Religion</span> <strong id="detail-pref-religion">Christian (Syrian Orthodox)</strong></div>
+                                    <div class="info-item"><span>Education</span> <strong id="detail-pref-education">Graduate or Post Graduate</strong></div>
+                                    <div class="info-item"><span>Occupation</span> <strong id="detail-pref-profession">IT Professional, Doctor, or Engineer</strong></div>
+                                    <div class="info-item"><span>Location Pref</span> <strong id="detail-pref-location">Kerala, Bangalore</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. CONNECTIONS & SHORTLISTS VIEW -->
+        <section class="view-section hidden" id="connections-view">
+            <div class="container connections-container">
+                <div class="connections-tabs">
+                    <button class="conn-tab-btn active" id="c-tab-btn-shortlist" onclick="setConnectionTab('shortlists')">
+                        Shortlisted Profiles (<span id="count-saved-tab">0</span>)
+                    </button>
+                    <button class="conn-tab-btn" id="c-tab-btn-interests" onclick="setConnectionTab('interests')">
+                        Interests Sent (<span id="count-interests-tab">0</span>)
+                    </button>
+                    <button class="conn-tab-btn" id="c-tab-btn-chats" onclick="setConnectionTab('chats')">
+                        My Chats (<span id="count-chats-tab">0</span>)
+                    </button>
+                </div>
+                
+                <!-- Panel: Shortlists -->
+                <div class="conn-panel" id="c-panel-shortlists">
+                    <div class="results-grid" id="shortlisted-grid">
+                        <!-- Loaded dynamically via JS -->
+                    </div>
+                    <div class="empty-state hidden" id="shortlist-empty">
+                        <div class="empty-icon">💔</div>
+                        <h3>No profiles shortlisted yet</h3>
+                        <p>Browse through matches and click the heart icon to save them here.</p>
+                        <button class="btn btn-primary" onclick="switchView('browse')">Browse Matches Now</button>
+                    </div>
+                </div>
+                
+                <!-- Panel: Interests Sent -->
+                <div class="conn-panel hidden" id="c-panel-interests">
+                    <div class="results-grid" id="interests-grid">
+                        <!-- Loaded dynamically via JS -->
+                    </div>
+                    <div class="empty-state hidden" id="interests-empty">
+                        <div class="empty-icon">💌</div>
+                        <h3>No connection requests sent yet</h3>
+                        <p>Find matches and express your interest to initiate connection.</p>
+                        <button class="btn btn-primary" onclick="switchView('browse')">Browse Matches Now</button>
+                    </div>
+                </div>
+                
+                <!-- Panel: Chats List -->
+                <div class="conn-panel hidden" id="c-panel-chats">
+                    <div class="chats-manager-layout">
+                        <!-- Inbox Sidebar -->
+                        <div class="chats-sidebar" id="chats-inbox-list">
+                            <!-- Populated by JS -->
+                        </div>
+                        
+                        <!-- Open Chat Window Pane -->
+                        <div class="chats-conversation-pane" id="chat-conversation-pane">
+                            <div class="chat-pane-empty" id="chat-pane-empty-state">
+                                <div class="empty-icon">💬</div>
+                                <h3>Select a Conversation</h3>
+                                <p>Choose a contact from the inbox list to start chatting.</p>
+                            </div>
+                            
+                            <div class="chat-pane-active hidden" id="chat-pane-active-state">
+                                <div class="chat-pane-header">
+                                    <img src="assets/images/profile_female_1.png" alt="Contact Avatar" class="chat-pane-avatar" id="chat-pane-avatar">
+                                    <div class="chat-pane-user-info">
+                                        <h4 class="chat-pane-name" id="chat-pane-name">Sarah John</h4>
+                                        <span class="chat-pane-status">Active Now</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="chat-pane-messages" id="chat-pane-messages-container">
+                                    <!-- Messages loaded dynamically -->
+                                </div>
+                                
+                                <form class="chat-pane-footer-input" id="chat-input-form" onsubmit="handleChatSubmit(event)">
+                                    <input type="text" class="chat-text-input" id="chat-message-text" placeholder="Type a message..." required>
+                                    <button type="submit" class="chat-send-btn" id="btn-chat-send">
+                                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. EDIT MY PROFILE VIEW -->
+        <section class="view-section hidden" id="myprofile-view">
+            <div class="container myprofile-container">
+                <div class="profile-card-large">
+                    <div class="myprofile-header">
+                        <h2>My Profile Management</h2>
+                        <p>Keep your profile up to date to get highly compatible match recommendations.</p>
+                    </div>
+                    
+                    <form id="myprofile-edit-form" onsubmit="handleMyProfileSave(event)">
+                        <div class="form-section-title">Personal Information</div>
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="edit-name">Full Name</label>
+                                <input type="text" class="form-control" id="edit-name" value="Amit Kumar" required>
+                            </div>
+                            <div class="form-group col">
+                                <label for="edit-mothertongue">Mother Tongue</label>
+                                <select class="form-control" id="edit-mothertongue">
+                                    <option value="Malayalam">Malayalam</option>
+                                    <option value="Hindi" selected>Hindi</option>
+                                    <option value="Tamil">Tamil</option>
+                                    <option value="Telugu">Telugu</option>
+                                    <option value="English">English</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="edit-religion">Religion</label>
+                                <select class="form-control" id="edit-religion">
+                                    <option value="Christian">Christian</option>
+                                    <option value="Hindu" selected>Hindu</option>
+                                    <option value="Muslim">Muslim</option>
+                                </select>
+                            </div>
+                            <div class="form-group col">
+                                <label for="edit-caste">Caste / Sect</label>
+                                <input type="text" class="form-control" id="edit-caste" value="Rajput">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="edit-age">Age (Years)</label>
+                                <input type="number" class="form-control" id="edit-age" value="28" min="18" max="70" required>
+                            </div>
+                            <div class="form-group col">
+                                <label for="edit-height">Height (e.g. 5 ft 8 in)</label>
+                                <input type="text" class="form-control" id="edit-height" value="5 ft 8 in" required>
+                            </div>
+                        </div>
+
+                        <div class="form-section-title">Professional & Location Information</div>
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="edit-education">Highest Education</label>
+                                <input type="text" class="form-control" id="edit-education" value="MBA in Marketing" required>
+                            </div>
+                            <div class="form-group col">
+                                <label for="edit-profession">Occupation</label>
+                                <select class="form-control" id="edit-profession">
+                                    <option value="Software Engineer">Software Engineer</option>
+                                    <option value="Doctor">Doctor</option>
+                                    <option value="Banker" selected>Banker</option>
+                                    <option value="UI/UX Designer">UI/UX Designer</option>
+                                    <option value="Civil Servant">Civil Servant</option>
+                                    <option value="Business Owner">Business Owner</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="edit-income">Annual Income</label>
+                                <select class="form-control" id="edit-income">
+                                    <option value="₹5 - 8 Lakhs">₹5 - 8 Lakhs</option>
+                                    <option value="₹8 - 12 Lakhs" selected>₹8 - 12 Lakhs</option>
+                                    <option value="₹12 - 18 Lakhs">₹12 - 18 Lakhs</option>
+                                    <option value="₹18+ Lakhs">₹18+ Lakhs</option>
+                                </select>
+                            </div>
+                            <div class="form-group col">
+                                <label for="edit-location">Current City</label>
+                                <select class="form-control" id="edit-location">
+                                    <option value="Kochi">Kochi</option>
+                                    <option value="Bangalore">Bangalore</option>
+                                    <option value="Mumbai" selected>Mumbai</option>
+                                    <option value="Chennai">Chennai</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edit-about">About Me Description</label>
+                            <textarea class="form-control" id="edit-about" rows="3" required>A creative and enthusiastic banker based in Mumbai. I enjoy working on fintech trends, reading fiction, playing badminton on weekends, and cooking traditional dishes.</textarea>
+                        </div>
+
+                        <div class="form-section-title">My Partner Preferences (Matching Criteria)</div>
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="edit-pref-age-min">Partner Age Range (Min)</label>
+                                <input type="number" class="form-control" id="edit-pref-age-min" value="23" min="18" max="70">
+                            </div>
+                            <div class="form-group col">
+                                <label for="edit-pref-age-max">Partner Age Range (Max)</label>
+                                <input type="number" class="form-control" id="edit-pref-age-max" value="29" min="18" max="70">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="edit-pref-religion">Partner Religion</label>
+                                <select class="form-control" id="edit-pref-religion">
+                                    <option value="all">Any Religion</option>
+                                    <option value="Christian">Christian</option>
+                                    <option value="Hindu" selected>Hindu</option>
+                                    <option value="Muslim">Muslim</option>
+                                </select>
+                            </div>
+                            <div class="form-group col">
+                                <label for="edit-pref-location">Partner Location Preference</label>
+                                <select class="form-control" id="edit-pref-location">
+                                    <option value="all">Any City</option>
+                                    <option value="Kochi">Kochi</option>
+                                    <option value="Bangalore" selected>Bangalore</option>
+                                    <option value="Mumbai">Mumbai</option>
+                                    <option value="Chennai">Chennai</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="myprofile-action-btns">
+                            <button type="button" class="btn btn-outline" onclick="switchView('dashboard')">Cancel</button>
+                            <button type="submit" class="btn btn-primary" id="btn-save-profile">Save & Update Profile</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. ADMIN PROFILE CREATOR VIEW -->
+        <section class="view-section hidden" id="admin-view">
+            <div class="container admin-container" style="padding: 40px 24px;">
+                <div class="profile-card-large" style="max-width: 800px; margin: 0 auto;">
+                    <div class="myprofile-header">
+                        <h2>Admin Panel - Add Matrimony Profile</h2>
+                        <p>Create a verified member profile and upload their picture. It will immediately appear in the database matches.</p>
+                    </div>
+                    
+                    <form id="admin-create-profile-form" onsubmit="handleAdminFormSubmit(event)">
+                        <div class="form-section-title">Personal Information</div>
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="admin-name">Full Name</label>
+                                <input type="text" class="form-control" id="admin-name" placeholder="e.g. Anjali Nair" required>
+                            </div>
+                            <div class="form-group col">
+                                <label for="admin-gender">Gender</label>
+                                <select class="form-control" id="admin-gender" required>
+                                    <option value="female">Female (Bride)</option>
+                                    <option value="male">Male (Groom)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="admin-age">Age (Years)</label>
+                                <input type="number" class="form-control" id="admin-age" min="18" max="70" value="26" required>
+                            </div>
+                            <div class="form-group col">
+                                <label for="admin-height">Height (e.g. 5 ft 5 in)</label>
+                                <input type="text" class="form-control" id="admin-height" placeholder="e.g. 5 ft 5 in" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="admin-religion">Religion</label>
+                                <select class="form-control" id="admin-religion" required>
+                                    <option value="Christian">Christian</option>
+                                    <option value="Hindu" selected>Hindu</option>
+                                    <option value="Muslim">Muslim</option>
+                                </select>
+                            </div>
+                            <div class="form-group col">
+                                <label for="admin-caste">Caste / Sect</label>
+                                <input type="text" class="form-control" id="admin-caste" placeholder="e.g. Nair, General, Syrian" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="admin-mothertongue">Mother Tongue</label>
+                                <select class="form-control" id="admin-mothertongue" required>
+                                    <option value="Malayalam">Malayalam</option>
+                                    <option value="Hindi">Hindi</option>
+                                    <option value="Tamil">Tamil</option>
+                                    <option value="Telugu">Telugu</option>
+                                    <option value="English">English</option>
+                                </select>
+                            </div>
+                            <div class="form-group col">
+                                <label for="admin-location">Current City</label>
+                                <select class="form-control" id="admin-location" required>
+                                    <option value="Kochi">Kochi</option>
+                                    <option value="Bangalore">Bangalore</option>
+                                    <option value="Mumbai">Mumbai</option>
+                                    <option value="Chennai">Chennai</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-section-title">Education & Career</div>
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="admin-education">Highest Education</label>
+                                <input type="text" class="form-control" id="admin-education" placeholder="e.g. B.Tech in Computer Science" required>
+                            </div>
+                            <div class="form-group col">
+                                <label for="admin-college">College / University</label>
+                                <input type="text" class="form-control" id="admin-college" placeholder="e.g. NIT Calicut" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="admin-profession">Occupation / Profession</label>
+                                <select class="form-control" id="admin-profession" required>
+                                    <option value="Software Engineer">Software Engineer</option>
+                                    <option value="Doctor">Doctor</option>
+                                    <option value="Banker">Banker</option>
+                                    <option value="UI/UX Designer">UI/UX Designer</option>
+                                    <option value="Civil Servant">Civil Servant</option>
+                                    <option value="Business Owner">Business Owner</option>
+                                </select>
+                            </div>
+                            <div class="form-group col">
+                                <label for="admin-employer">Employer Organization</label>
+                                <input type="text" class="form-control" id="admin-employer" placeholder="e.g. Infosys, TCS, Self Employed" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="admin-income">Annual Income</label>
+                                <select class="form-control" id="admin-income" required>
+                                    <option value="₹5 - 8 Lakhs">₹5 - 8 Lakhs</option>
+                                    <option value="₹8 - 12 Lakhs">₹8 - 12 Lakhs</option>
+                                    <option value="₹12 - 18 Lakhs">₹12 - 18 Lakhs</option>
+                                    <option value="₹18+ Lakhs">₹18+ Lakhs</option>
+                                </select>
+                            </div>
+                            <div class="form-group col">
+                                <label for="admin-diet">Dietary Habits</label>
+                                <select class="form-control" id="admin-diet" required>
+                                    <option value="Vegetarian">Vegetarian</option>
+                                    <option value="Non-Vegetarian" selected>Non-Vegetarian</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="admin-about">About Biography</label>
+                            <textarea class="form-control" id="admin-about" rows="3" placeholder="Describe their character, life values, interests, etc..." required></textarea>
+                        </div>
+
+                        <div class="form-section-title">Upload Profile Photo</div>
+                        <div class="form-group">
+                            <label for="admin-photo">Select Photo File</label>
+                            <input type="file" id="admin-photo" accept="image/*" class="form-control" required style="padding: 8px;">
+                            <small style="color: var(--text-light); margin-top: 4px; display: block;">File converts locally to Base64 image and saves directly in browser session database.</small>
+                        </div>
+                        <div class="form-group hidden" id="admin-photo-preview-container" style="text-align: center; margin-top: 16px;">
+                            <label>Image Preview</label>
+                            <img id="admin-photo-preview" src="" alt="Preview" style="max-height: 200px; border-radius: var(--border-radius-sm); border: 2px solid var(--accent); margin: 0 auto; display: block; object-fit: cover;">
+                        </div>
+
+                        <div class="form-section-title">Family Details</div>
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="admin-family-values">Family Values</label>
+                                <select class="form-control" id="admin-family-values">
+                                    <option value="Moderate">Moderate</option>
+                                    <option value="Traditional">Traditional</option>
+                                    <option value="Liberal">Liberal</option>
+                                </select>
+                            </div>
+                            <div class="form-group col">
+                                <label for="admin-family-type">Family Type</label>
+                                <select class="form-control" id="admin-family-type">
+                                    <option value="Nuclear Family">Nuclear Family</option>
+                                    <option value="Joint Family">Joint Family</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="admin-father">Father's Profession</label>
+                                <input type="text" class="form-control" id="admin-father" placeholder="Retired Officer, Businessman, etc." required>
+                            </div>
+                            <div class="form-group col">
+                                <label for="admin-mother">Mother's Profession</label>
+                                <input type="text" class="form-control" id="admin-mother" placeholder="Teacher, Homemaker, etc." required>
+                            </div>
+                        </div>
+
+                        <div class="form-section-title">Partner Preferences</div>
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="admin-pref-age-min">Partner Age Min</label>
+                                <input type="number" class="form-control" id="admin-pref-age-min" min="18" max="70" value="25" required>
+                            </div>
+                            <div class="form-group col">
+                                <label for="admin-pref-age-max">Partner Age Max</label>
+                                <input type="number" class="form-control" id="admin-pref-age-max" min="18" max="70" value="30" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col">
+                                <label for="admin-pref-religion">Partner Religion</label>
+                                <select class="form-control" id="admin-pref-religion" required>
+                                    <option value="Christian">Christian</option>
+                                    <option value="Hindu">Hindu</option>
+                                    <option value="Muslim">Muslim</option>
+                                    <option value="all" selected>Any Religion</option>
+                                </select>
+                            </div>
+                            <div class="form-group col">
+                                <label for="admin-pref-location">Partner Location</label>
+                                <select class="form-control" id="admin-pref-location" required>
+                                    <option value="Kochi">Kochi</option>
+                                    <option value="Bangalore">Bangalore</option>
+                                    <option value="Mumbai">Mumbai</option>
+                                    <option value="Chennai">Chennai</option>
+                                    <option value="all" selected>Any Location</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="myprofile-action-btns">
+                            <button type="button" class="btn btn-outline" onclick="switchView('browse')">Cancel</button>
+                            <button type="submit" class="btn btn-primary" id="btn-admin-create">Publish Profile</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Floating Chat Window Overlay (Shown when quick chatting) -->
+    <div class="quick-chat-overlay hidden" id="quick-chat-widget">
+        <div class="quick-chat-header">
+            <div class="quick-chat-avatar-info" onclick="openChatPaneFromWidget()">
+                <img src="assets/images/profile_female_1.png" alt="Avatar" class="quick-chat-avatar" id="widget-chat-avatar">
+                <div class="quick-chat-names">
+                    <h4 id="widget-chat-name">Sophia Ann</h4>
+                    <span>Active Now</span>
+                </div>
+            </div>
+            <button class="quick-chat-close-btn" id="btn-widget-chat-close" onclick="closeQuickChatWidget()">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="quick-chat-messages" id="widget-chat-messages-container">
+            <!-- Filled dynamically -->
+        </div>
+        <form class="quick-chat-footer" id="widget-chat-form" onsubmit="handleWidgetChatSubmit(event)">
+            <input type="text" class="quick-chat-text-input" id="widget-chat-input-text" placeholder="Type a message..." required>
+            <button type="submit" class="quick-chat-send-btn" id="btn-widget-chat-send">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </form>
+    </div>
+
+    <!-- Toast Notification System -->
+    <div class="toast-notification-container" id="toast-container"></div>
+
+    <!-- Elegant Footer -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <div class="logo-container">
+                    <span class="logo-icon">
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                    </span>
+                    <span class="logo-text text-white">Just <span class="accent-text">Matrimony</span></span>
+                </div>
+                <p class="brand-tagline">Connecting hearts and cultures. Your security is our highest priority.</p>
+            </div>
+            
+            <div class="footer-links-grid">
+                <div class="footer-column">
+                    <h4>Explore</h4>
+                    <ul>
+                        <li><a href="#" onclick="event.preventDefault(); switchView('landing')">Home</a></li>
+                        <li><a href="#" onclick="event.preventDefault(); switchView('browse')">Browse Matches</a></li>
+                        <li><a href="#" onclick="event.preventDefault(); switchView('auth', 'register')">Register Free</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Trust & Security</h4>
+                    <ul>
+                        <li><a href="#" onclick="event.preventDefault(); alert('Demo Privacy Policy')">Privacy Policy</a></li>
+                        <li><a href="#" onclick="event.preventDefault(); alert('Demo Terms of Use')">Terms of Use</a></li>
+                        <li><a href="#" onclick="event.preventDefault(); alert('Demo Safety Tips')">Safety Tips</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 West Matrimony Services. All rights reserved. Designed for elite matchmaking.</p>
+        </div>
+    </footer>
+
+    <!-- App Script -->
+    <script src="app.js"></script>
+</body>
+</html>
