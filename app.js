@@ -3,8 +3,8 @@
 // =========================================================================
 // SUPABASE CLIENT CONFIGURATION
 // =========================================================================
-const SUPABASE_URL = "https://your-project-id.supabaseClient.co"; // Replace with your URL
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.your-anon-key"; // Replace with your Key
+const SUPABASE_URL = "https://hcpvatyjvxxylnlagxyt.supabase.co"; // Replace with your URL
+const SUPABASE_KEY = "sb_publishable_LwqL35y2j9lfXY_T64hfEw_ksOlYLE3"; // Replace with your Key
 
 let supabaseClient = null;
 let isBackendEnabled = false;
