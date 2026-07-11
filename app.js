@@ -3,15 +3,15 @@
 // =========================================================================
 // SUPABASE CLIENT CONFIGURATION
 // =========================================================================
-const SUPABASE_URL = "https://your-project-id.supabase.co"; // Replace with your URL
+const SUPABASE_URL = "https://your-project-id.supabaseClient.co"; // Replace with your URL
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.your-anon-key"; // Replace with your Key
 
-let supabase = null;
+let supabaseClient = null;
 let isBackendEnabled = false;
 try {
     if (typeof window.supabase !== "undefined" && window.supabase.createClient) {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        isBackendEnabled = SUPABASE_URL !== "https://your-project-id.supabase.co" && SUPABASE_KEY !== "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.your-anon-key";
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        isBackendEnabled = SUPABASE_URL !== "https://your-project-id.supabaseClient.co" && SUPABASE_KEY !== "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.your-anon-key";
     }
 } catch (e) {
     console.error("Supabase load failed, running in LocalStorage mode:", e);
@@ -674,9 +674,9 @@ function calculateAgeFromDOB(dobString) {
 // Handle Logout
 function handleLogout() {
     if (isBackendEnabled) {
-        supabase.auth.signOut();
+        supabaseClient.auth.signOut();
         if (realtimeChannel) {
-            supabase.removeChannel(realtimeChannel);
+            supabaseClient.removeChannel(realtimeChannel);
             realtimeChannel = null;
         }
     }
@@ -1037,7 +1037,7 @@ function handleDetailShortlist() {
         showToast(`Removed ${profile.name} from shortlist.`, "info");
         
         if (isBackendEnabled && state.currentUser) {
-            supabase
+            supabaseClient
                 .from('shortlists')
                 .delete()
                 .eq('user_id', state.currentUser.id)
@@ -1056,7 +1056,7 @@ function handleDetailShortlist() {
         showToast(`Added ${profile.name} to shortlist!`, "success");
         
         if (isBackendEnabled && state.currentUser) {
-            supabase
+            supabaseClient
                 .from('shortlists')
                 .insert({
                     user_id: state.currentUser.id,
@@ -1097,7 +1097,7 @@ function handleDetailConnect() {
     if (isBackendEnabled && state.currentUser) {
         const now = new Date();
         const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        supabase
+        supabaseClient
             .from('messages')
             .insert({
                 sender_id: state.currentUser.id,
@@ -1435,7 +1435,7 @@ function appendChatMessage(profileId, sender, text) {
     
     // Send to Supabase if backend active
     if (isBackendEnabled && sender === "user" && state.currentUser) {
-        supabase
+        supabaseClient
             .from('messages')
             .insert({
                 sender_id: state.currentUser.id,
@@ -1679,12 +1679,12 @@ async function loadSupabaseData() {
     
     try {
         // 1. Get current session
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session } } = await supabaseClient.auth.getSession();
         if (session) {
             const user = session.user;
             
             // Fetch users_profiles record
-            const { data: profile } = await supabase
+            const { data: profile } = await supabaseClient
                 .from('users_profiles')
                 .select('*')
                 .eq('id', user.id)
@@ -1731,7 +1731,7 @@ async function loadSupabaseData() {
             }
             
             // 2. Load shortlists
-            const { data: shortlistData } = await supabase
+            const { data: shortlistData } = await supabaseClient
                 .from('shortlists')
                 .select('profile_id')
                 .eq('user_id', user.id);
@@ -1741,7 +1741,7 @@ async function loadSupabaseData() {
         }
         
         // 3. Load all profiles (merging mock data and any custom database entries)
-        const { data: dbProfiles } = await supabase
+        const { data: dbProfiles } = await supabaseClient
             .from('profiles')
             .select('*');
         if (dbProfiles) {
@@ -1805,7 +1805,7 @@ async function loadChatMessages() {
     
     try {
         const userId = state.currentUser.id;
-        const { data: msgRows } = await supabase
+        const { data: msgRows } = await supabaseClient
             .from('messages')
             .select('*')
             .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
@@ -1842,12 +1842,12 @@ function setupRealtimeMessages() {
     if (!isBackendEnabled || !state.currentUser) return;
     
     if (realtimeChannel) {
-        supabase.removeChannel(realtimeChannel);
+        supabaseClient.removeChannel(realtimeChannel);
     }
     
     const userId = state.currentUser.id;
     
-    realtimeChannel = supabase
+    realtimeChannel = supabaseClient
         .channel('public:messages')
         .on('postgres_changes', { 
             event: 'INSERT', 
@@ -1889,7 +1889,7 @@ async function handleLoginSubmitSupabase(email, password) {
     showToast("Authenticating via Supabase...", "info");
     
     try {
-        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
             email: email,
             password: password
         });
@@ -1916,7 +1916,7 @@ async function handleRegisterSubmitSupabase(newUser, email, password) {
     showToast("Creating account in Supabase...", "info");
     
     try {
-        const { data: authData, error: authError } = await supabase.auth.signUp({
+        const { data: authData, error: authError } = await supabaseClient.auth.signUp({
             email: email,
             password: password
         });
@@ -1929,7 +1929,7 @@ async function handleRegisterSubmitSupabase(newUser, email, password) {
         const user = authData.user;
         if (user) {
             // Save to users_profiles
-            const { error: profileError } = await supabase
+            const { error: profileError } = await supabaseClient
                 .from('users_profiles')
                 .insert({
                     id: user.id,
@@ -1979,7 +1979,7 @@ async function publishAdminProfileSupabase(newProfile) {
         const fileName = `${newProfile.id}.png`;
         
         // Upload photo
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { data: uploadData, error: uploadError } = await supabaseClient.storage
             .from('profile-images')
             .upload(fileName, blob, {
                 cacheControl: '3600',
@@ -1992,14 +1992,14 @@ async function publishAdminProfileSupabase(newProfile) {
         }
         
         // Retrieve public URL
-        const { data: { publicUrl } } = supabase.storage
+        const { data: { publicUrl } } = supabaseClient.storage
             .from('profile-images')
             .getPublicUrl(fileName);
             
         newProfile.image = publicUrl;
         
         // Write record
-        const { error: dbError } = await supabase
+        const { error: dbError } = await supabaseClient
             .from('profiles')
             .insert({
                 id: newProfile.id,
