@@ -1990,7 +1990,7 @@ async function loadSupabaseData() {
                 .single();
                 
             if (profile) {
-                const isAdminUser = profile.is_admin || (user.email && user.email.toLowerCase() === "admin@westmatrimony.com");
+                const isAdminUser = profile.is_admin || (user.email && user.email.trim().toLowerCase() === "admin@westmatrimony.com");
                 
                 // Admin Single-Session Lock Check
                 if (isAdminUser) {
@@ -2010,6 +2010,7 @@ async function loadSupabaseData() {
                 state.currentUser = {
                     id: profile.id,
                     name: profile.name,
+                    email: user.email,
                     gender: profile.gender,
                     age: profile.age,
                     height: profile.height,
@@ -2043,9 +2044,12 @@ async function loadSupabaseData() {
                     prefAgeMin: 20,
                     prefAgeMax: 45,
                     prefReligion: 'Hindu',
-                    isAdmin: user.email.includes("admin")
+                    isAdmin: user.email.trim().toLowerCase().includes("admin")
                 };
             }
+            
+            // Sync with local storage
+            localStorage.setItem("wm_current_user", JSON.stringify(state.currentUser));
             
             // 2. Load shortlists
             const { data: shortlistData } = await supabaseClient
@@ -2246,9 +2250,10 @@ async function handleLoginSubmitSupabase(email, password) {
 async function handleRegisterSubmitSupabase(newUser, email, password) {
     showToast("Creating account in Supabase...", "info");
     
+    const cleanEmail = email.trim().toLowerCase();
     try {
         const { data: authData, error: authError } = await supabaseClient.auth.signUp({
-            email: email,
+            email: cleanEmail,
             password: password
         });
         
@@ -2259,7 +2264,7 @@ async function handleRegisterSubmitSupabase(newUser, email, password) {
         
         const user = authData.user;
         if (user) {
-            const isSystemAdmin = email.toLowerCase() === "admin@westmatrimony.com";
+            const isSystemAdmin = cleanEmail === "admin@westmatrimony.com";
             
             // Save to users_profiles
             const { error: profileError } = await supabaseClient
@@ -2291,13 +2296,17 @@ async function handleRegisterSubmitSupabase(newUser, email, password) {
                 console.error("Error creating Supabase user profile record:", profileError);
             }
             
-            state.currentUser = { ...newUser, id: user.id, isAdmin: isSystemAdmin };
+            state.currentUser = { ...newUser, id: user.id, email: cleanEmail, isAdmin: isSystemAdmin };
+            
+            // Save to local storage
+            localStorage.setItem("wm_current_user", JSON.stringify(state.currentUser));
+            
             updateHeaderAuthDOM();
             setupRealtimeMessages();
             loadChatMessages();
             
             showToast("Registration completed! Profile created in Supabase.", "success");
-            switchView("dashboard");
+            switchView(isSystemAdmin ? "admin" : "dashboard");
         }
     } catch (e) {
         showToast("Registration failed: connection error.", "danger");
