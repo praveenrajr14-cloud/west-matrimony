@@ -369,49 +369,70 @@
                                     </div>
                                 </div>
                                 <div class="form-row">
-                                    <div class="form-group col">
-                                        <label for="reg-education">Highest Education</label>
-                                        <select class="form-control" id="reg-education">
-                                            <option value="B.Tech / B.E.">B.Tech / B.E.</option>
-                                            <option value="M.Tech / M.E.">M.Tech / M.E.</option>
-                                            <option value="MBA">MBA</option>
-                                            <option value="MBBS / MD">MBBS / MD</option>
-                                            <option value="B.Com / M.Com">B.Com / M.Com</option>
-                                            <option value="PhD">PhD</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="reg-profession">Occupation</label>
-                                        <select class="form-control" id="reg-profession">
-                                            <option value="Software Engineer">Software Engineer</option>
-                                            <option value="Doctor">Doctor</option>
-                                            <option value="Banker">Banker</option>
-                                            <option value="UI/UX Designer">UI/UX Designer</option>
-                                            <option value="Civil Servant">Civil Servant</option>
-                                            <option value="Business Owner">Business Owner</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group col">
-                                        <label for="reg-income">Annual Income</label>
-                                        <select class="form-control" id="reg-income">
-                                            <option value="₹5 - 8 Lakhs">₹5 - 8 Lakhs</option>
-                                            <option value="₹8 - 12 Lakhs">₹8 - 12 Lakhs</option>
-                                            <option value="₹12 - 18 Lakhs">₹12 - 18 Lakhs</option>
-                                            <option value="₹18+ Lakhs">₹18+ Lakhs</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group col">
-                                        <label for="reg-location">Current City</label>
-                                        <select class="form-control" id="reg-location">
-                                            <option value="Kochi">Kochi</option>
-                                            <option value="Bangalore">Bangalore</option>
-                                            <option value="Mumbai">Mumbai</option>
-                                            <option value="Chennai">Chennai</option>
-                                        </select>
-                                    </div>
-                                </div>
+                                     <div class="form-group col">
+                                         <label for="reg-education">Highest Education</label>
+                                         <select class="form-control" id="reg-education" onchange="toggleCustomInput(this, 'reg-education-custom-group')">
+                                             <option value="B.Tech / B.E.">B.Tech / B.E.</option>
+                                             <option value="M.Tech / M.E.">M.Tech / M.E.</option>
+                                             <option value="MBA">MBA</option>
+                                             <option value="MBBS / MD">MBBS / MD</option>
+                                             <option value="B.Com / M.Com">B.Com / M.Com</option>
+                                             <option value="PhD">PhD</option>
+                                             <option value="Others">Others (Type manually)</option>
+                                         </select>
+                                         <div class="form-group col hidden" id="reg-education-custom-group" style="margin-top: 8px; padding: 0;">
+                                             <input type="text" class="form-control" id="reg-education-custom" placeholder="Type your qualification...">
+                                         </div>
+                                     </div>
+                                     <div class="form-group col">
+                                         <label for="reg-profession">Occupation</label>
+                                         <select class="form-control" id="reg-profession" onchange="toggleCustomInput(this, 'reg-profession-custom-group')">
+                                             <option value="Software Engineer">Software Engineer</option>
+                                             <option value="Doctor">Doctor</option>
+                                             <option value="Banker">Banker</option>
+                                             <option value="UI/UX Designer">UI/UX Designer</option>
+                                             <option value="Civil Servant">Civil Servant</option>
+                                             <option value="Business Owner">Business Owner</option>
+                                             <option value="Others">Others (Type manually)</option>
+                                         </select>
+                                         <div class="form-group col hidden" id="reg-profession-custom-group" style="margin-top: 8px; padding: 0;">
+                                             <input type="text" class="form-control" id="reg-profession-custom" placeholder="Type your occupation...">
+                                         </div>
+                                     </div>
+                                 </div>
+                                 <div class="form-row">
+                                     <div class="form-group col">
+                                         <label for="reg-income">Annual Income</label>
+                                         <select class="form-control" id="reg-income">
+                                             <option value="Below ₹5 Lakhs">Below ₹5 Lakhs</option>
+                                             <option value="₹5 - 8 Lakhs">₹5 - 8 Lakhs</option>
+                                             <option value="₹8 - 12 Lakhs">₹8 - 12 Lakhs</option>
+                                             <option value="₹12 - 18 Lakhs">₹12 - 18 Lakhs</option>
+                                             <option value="₹18+ Lakhs">₹18+ Lakhs</option>
+                                         </select>
+                                     </div>
+                                     <div class="form-group col">
+                                         <label for="reg-location">Current City</label>
+                                         <select class="form-control" id="reg-location" onchange="toggleCustomInput(this, 'reg-location-custom-group')">
+                                             <option value="Kochi">Kochi</option>
+                                             <option value="Trivandrum">Trivandrum</option>
+                                             <option value="Kozhikode">Kozhikode</option>
+                                             <option value="Thrissur">Thrissur</option>
+                                             <option value="Kollam">Kollam</option>
+                                             <option value="Alappuzha">Alappuzha</option>
+                                             <option value="Palakkad">Palakkad</option>
+                                             <option value="Kottayam">Kottayam</option>
+                                             <option value="Kannur">Kannur</option>
+                                             <option value="Bangalore">Bangalore</option>
+                                             <option value="Mumbai">Mumbai</option>
+                                             <option value="Chennai">Chennai</option>
+                                             <option value="Others">Others (Type manually)</option>
+                                         </select>
+                                         <div class="form-group col hidden" id="reg-location-custom-group" style="margin-top: 8px; padding: 0;">
+                                             <input type="text" class="form-control" id="reg-location-custom" placeholder="Type your location...">
+                                         </div>
+                                     </div>
+                                 </div>
                                 <div class="slide-navigation dual-btn">
                                     <button type="button" class="btn btn-outline" onclick="prevRegisterStep(1)" id="btn-reg-prev-1">Back</button>
                                     <button type="button" class="btn btn-primary" onclick="nextRegisterStep(3)" id="btn-reg-next-2">Next Step</button>
@@ -671,9 +692,16 @@
                     <!-- Right Column: Profile Detailed Bio -->
                     <div class="detail-card-right">
                         <div class="detail-name-header">
+                            <div class="detail-header-top-row" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 8px;">
+                                <span class="profile-id-tag" id="detail-profile-id" style="margin-bottom: 0;">ID: WM-10294</span>
+                                <div class="detail-language-switcher" style="display: flex; align-items: center; gap: 6px; font-size: 13px;">
+                                    <span style="color: var(--text-muted); font-size: 12px;">Language / ഭാഷ:</span>
+                                    <button class="lang-btn active" id="lang-btn-en" onclick="changeDetailLanguage('en')" style="padding: 4px 10px; font-size: 11px; border: 1px solid var(--primary); background: var(--primary); color: white; border-radius: 20px; cursor: pointer; transition: all 0.3s ease;">English</button>
+                                    <button class="lang-btn" id="lang-btn-ml" onclick="changeDetailLanguage('ml')" style="padding: 4px 10px; font-size: 11px; border: 1px solid var(--border); background: transparent; color: var(--text-dark); border-radius: 20px; cursor: pointer; transition: all 0.3s ease;">മലയാളം</button>
+                                </div>
+                            </div>
                             <h2 class="profile-detail-fullname" id="detail-fullname">Sophia Ann Abraham</h2>
                             <p class="profile-detail-subline"><span id="detail-primary-occupation">Software Engineer</span> • <span id="detail-primary-city">Kochi, Kerala</span></p>
-                            <span class="profile-id-tag" id="detail-profile-id">ID: WM-10294</span>
                         </div>
                         
                         <!-- Navigation Tabs for Profile Sections -->
@@ -687,19 +715,19 @@
                         <!-- Panel: About -->
                         <div class="profile-panel" id="p-panel-about">
                             <div class="panel-section">
-                                <h3>About Her</h3>
+                                <h3 id="lbl-detail-about-title">About Her</h3>
                                 <p id="detail-about-text">A cheerful, career-oriented individual who balances traditional values with a modern outlook. She loves listening to music, traveling, and exploring new cuisines.</p>
                             </div>
                             
                             <div class="panel-section">
-                                <h3>Basic Information</h3>
+                                <h3 id="lbl-detail-basic-title">Basic Information</h3>
                                 <div class="info-grid">
-                                    <div class="info-item"><span>Age</span> <strong id="detail-age">25 Years</strong></div>
-                                    <div class="info-item"><span>Height</span> <strong id="detail-height">5 ft 4 in (162 cm)</strong></div>
-                                    <div class="info-item"><span>Mother Tongue</span> <strong id="detail-mothertongue">Malayalam</strong></div>
-                                    <div class="info-item"><span>Marital Status</span> <strong id="detail-marital">Never Married</strong></div>
-                                    <div class="info-item"><span>Religion</span> <strong id="detail-religion">Christian</strong></div>
-                                    <div class="info-item"><span>Caste / Sect</span> <strong id="detail-caste">Syrian Orthodox</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-age">Age</span> <strong id="detail-age">25 Years</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-height">Height</span> <strong id="detail-height">5 ft 4 in (162 cm)</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-mothertongue">Mother Tongue</span> <strong id="detail-mothertongue">Malayalam</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-marital">Marital Status</span> <strong id="detail-marital">Never Married</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-religion">Religion</span> <strong id="detail-religion">Christian</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-caste">Caste / Sect</span> <strong id="detail-caste">Syrian Orthodox</strong></div>
                                 </div>
                             </div>
                         </div>
@@ -707,20 +735,20 @@
                         <!-- Panel: Career & Education -->
                         <div class="profile-panel hidden" id="p-panel-education">
                             <div class="panel-section">
-                                <h3>Educational Background</h3>
+                                <h3 id="lbl-detail-edu-title">Educational Background</h3>
                                 <div class="info-grid single-col">
-                                    <div class="info-item"><span>Highest Education</span> <strong id="detail-education">B.Tech in Computer Science</strong></div>
-                                    <div class="info-item"><span>University / College</span> <strong id="detail-college">College of Engineering Trivandrum (CET)</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-education">Highest Education</span> <strong id="detail-education">B.Tech in Computer Science</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-college">University / College</span> <strong id="detail-college">College of Engineering Trivandrum (CET)</strong></div>
                                 </div>
                             </div>
                             
                             <div class="panel-section">
-                                <h3>Professional Background</h3>
+                                <h3 id="lbl-detail-career-title">Professional Background</h3>
                                 <div class="info-grid">
-                                    <div class="info-item"><span>Occupation</span> <strong id="detail-occupation">Senior Software Developer</strong></div>
-                                    <div class="info-item"><span>Employed In</span> <strong id="detail-employer">Private MNC (TCS Kochi)</strong></div>
-                                    <div class="info-item"><span>Annual Income</span> <strong id="detail-income">₹12 - 15 Lakhs</strong></div>
-                                    <div class="info-item"><span>Work Location</span> <strong id="detail-work-location">Kochi, India</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-occupation">Occupation</span> <strong id="detail-occupation">Senior Software Developer</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-employer">Employed In</span> <strong id="detail-employer">Private MNC (TCS Kochi)</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-income">Annual Income</span> <strong id="detail-income">₹12 - 15 Lakhs</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-work-location">Work Location</span> <strong id="detail-work-location">Kochi, India</strong></div>
                                 </div>
                             </div>
                         </div>
@@ -728,22 +756,22 @@
                         <!-- Panel: Family Details -->
                         <div class="profile-panel hidden" id="p-panel-family">
                             <div class="panel-section">
-                                <h3>Family Background</h3>
+                                <h3 id="lbl-detail-family-title">Family Background</h3>
                                 <div class="info-grid">
-                                    <div class="info-item"><span>Family Values</span> <strong id="detail-family-values">Moderate</strong></div>
-                                    <div class="info-item"><span>Family Type</span> <strong id="detail-family-type">Nuclear Family</strong></div>
-                                    <div class="info-item"><span>Father's Profession</span> <strong id="detail-father">Retired Government Officer</strong></div>
-                                    <div class="info-item"><span>Mother's Profession</span> <strong id="detail-mother">High School Teacher</strong></div>
-                                    <div class="info-item"><span>Brothers</span> <strong id="detail-brothers">1 (Married)</strong></div>
-                                    <div class="info-item"><span>Sisters</span> <strong id="detail-sisters">None</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-family-values">Family Values</span> <strong id="detail-family-values">Moderate</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-family-type">Family Type</span> <strong id="detail-family-type">Nuclear Family</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-father">Father's Profession</span> <strong id="detail-father">Retired Government Officer</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-mother">Mother's Profession</span> <strong id="detail-mother">High School Teacher</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-brothers">Brothers</span> <strong id="detail-brothers">1 (Married)</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-sisters">Sisters</span> <strong id="detail-sisters">None</strong></div>
                                 </div>
                             </div>
                             
                             <div class="panel-section">
-                                <h3>Lifestyle Details</h3>
+                                <h3 id="lbl-detail-lifestyle-title">Lifestyle Details</h3>
                                 <div class="info-grid">
-                                    <div class="info-item"><span>Dietary Habits</span> <strong id="detail-diet">Non-Vegetarian</strong></div>
-                                    <div class="info-item"><span>Drinking / Smoking</span> <strong id="detail-lifestyle">No / No</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-diet">Dietary Habits</span> <strong id="detail-diet">Non-Vegetarian</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-lifestyle">Drinking / Smoking</span> <strong id="detail-lifestyle">No / No</strong></div>
                                 </div>
                             </div>
                         </div>
@@ -751,15 +779,15 @@
                         <!-- Panel: Partner Preference -->
                         <div class="profile-panel hidden" id="p-panel-preference">
                             <div class="panel-section">
-                                <h3>Partner Expectations</h3>
-                                <p>What she is looking for in a partner:</p>
+                                <h3 id="lbl-detail-pref-title">Partner Expectations</h3>
+                                <p id="lbl-detail-pref-sub">What she is looking for in a partner:</p>
                                 <div class="info-grid">
-                                    <div class="info-item"><span>Age Range</span> <strong id="detail-pref-age">26 - 30 Years</strong></div>
-                                    <div class="info-item"><span>Min Height</span> <strong id="detail-pref-height">5 ft 7 in (170 cm)</strong></div>
-                                    <div class="info-item"><span>Religion</span> <strong id="detail-pref-religion">Christian (Syrian Orthodox)</strong></div>
-                                    <div class="info-item"><span>Education</span> <strong id="detail-pref-education">Graduate or Post Graduate</strong></div>
-                                    <div class="info-item"><span>Occupation</span> <strong id="detail-pref-profession">IT Professional, Doctor, or Engineer</strong></div>
-                                    <div class="info-item"><span>Location Pref</span> <strong id="detail-pref-location">Kerala, Bangalore</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-pref-age">Age Range</span> <strong id="detail-pref-age">26 - 30 Years</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-pref-height">Min Height</span> <strong id="detail-pref-height">5 ft 7 in (170 cm)</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-pref-religion">Religion</span> <strong id="detail-pref-religion">Christian (Syrian Orthodox)</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-pref-education">Education</span> <strong id="detail-pref-education">Graduate or Post Graduate</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-pref-profession">Occupation</span> <strong id="detail-pref-profession">IT Professional, Doctor, or Engineer</strong></div>
+                                    <div class="info-item"><span id="lbl-detail-pref-location">Location Pref</span> <strong id="detail-pref-location">Kerala, Bangalore</strong></div>
                                 </div>
                             </div>
                         </div>
@@ -1059,12 +1087,24 @@
                             </div>
                             <div class="form-group col">
                                 <label for="admin-location">Current City</label>
-                                <select class="form-control" id="admin-location" required>
+                                <select class="form-control" id="admin-location" required onchange="toggleCustomInput(this, 'admin-location-custom-group')">
                                     <option value="Kochi">Kochi</option>
+                                    <option value="Trivandrum">Trivandrum</option>
+                                    <option value="Kozhikode">Kozhikode</option>
+                                    <option value="Thrissur">Thrissur</option>
+                                    <option value="Kollam">Kollam</option>
+                                    <option value="Alappuzha">Alappuzha</option>
+                                    <option value="Palakkad">Palakkad</option>
+                                    <option value="Kottayam">Kottayam</option>
+                                    <option value="Kannur">Kannur</option>
                                     <option value="Bangalore">Bangalore</option>
                                     <option value="Mumbai">Mumbai</option>
                                     <option value="Chennai">Chennai</option>
+                                    <option value="Others">Others (Type manually)</option>
                                 </select>
+                                <div class="form-group col hidden" id="admin-location-custom-group" style="margin-top: 8px; padding: 0;">
+                                    <input type="text" class="form-control" id="admin-location-custom" placeholder="Type location manually...">
+                                </div>
                             </div>
                         </div>
 
@@ -1083,14 +1123,18 @@
                         <div class="form-row">
                             <div class="form-group col">
                                 <label for="admin-profession">Occupation / Profession</label>
-                                <select class="form-control" id="admin-profession" required>
+                                <select class="form-control" id="admin-profession" required onchange="toggleCustomInput(this, 'admin-profession-custom-group')">
                                     <option value="Software Engineer">Software Engineer</option>
                                     <option value="Doctor">Doctor</option>
                                     <option value="Banker">Banker</option>
                                     <option value="UI/UX Designer">UI/UX Designer</option>
                                     <option value="Civil Servant">Civil Servant</option>
                                     <option value="Business Owner">Business Owner</option>
+                                    <option value="Others">Others (Type manually)</option>
                                 </select>
+                                <div class="form-group col hidden" id="admin-profession-custom-group" style="margin-top: 8px; padding: 0;">
+                                    <input type="text" class="form-control" id="admin-profession-custom" placeholder="Type occupation manually...">
+                                </div>
                             </div>
                             <div class="form-group col">
                                 <label for="admin-employer">Employer Organization</label>
@@ -1102,6 +1146,7 @@
                             <div class="form-group col">
                                 <label for="admin-income">Annual Income</label>
                                 <select class="form-control" id="admin-income" required>
+                                    <option value="Below ₹5 Lakhs">Below ₹5 Lakhs</option>
                                     <option value="₹5 - 8 Lakhs">₹5 - 8 Lakhs</option>
                                     <option value="₹8 - 12 Lakhs">₹8 - 12 Lakhs</option>
                                     <option value="₹12 - 18 Lakhs">₹12 - 18 Lakhs</option>

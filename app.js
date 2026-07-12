@@ -289,6 +289,12 @@ function initLocalStorageState() {
 function switchView(viewName, subView = null) {
     state.activeView = viewName;
     
+    // Close mobile nav menu if open
+    const navMenu = document.getElementById("app-nav-menu");
+    if (navMenu && navMenu.classList.contains("mobile-open")) {
+        navMenu.classList.remove("mobile-open");
+    }
+    
     // Hide all views
     const views = document.querySelectorAll(".view-section");
     views.forEach(view => {
@@ -619,10 +625,23 @@ function handleRegisterSubmit(event) {
     const dob = document.getElementById("reg-dob").value;
     const mothertongue = document.getElementById("reg-mothertongue").value;
     const religion = document.getElementById("reg-religion").value;
-    const education = document.getElementById("reg-education").value;
-    const occupation = document.getElementById("reg-profession").value;
+    
+    let education = document.getElementById("reg-education").value;
+    if (education === "Others") {
+        education = document.getElementById("reg-education-custom").value.trim() || "Others";
+    }
+    
+    let occupation = document.getElementById("reg-profession").value;
+    if (occupation === "Others") {
+        occupation = document.getElementById("reg-profession-custom").value.trim() || "Others";
+    }
+    
     const income = document.getElementById("reg-income").value;
-    const location = document.getElementById("reg-location").value;
+    
+    let location = document.getElementById("reg-location").value;
+    if (location === "Others") {
+        location = document.getElementById("reg-location-custom").value.trim() || "Others";
+    }
     
     // Build user object
     const newUser = {
@@ -913,49 +932,248 @@ function viewProfileDetail(profileId) {
         connectBtn.className = "btn btn-primary btn-block";
     }
     
-    // Fill main header details
+    // Highlight about tab panel by default on load
+    setProfileTab("about");
+    
+    // Reset language switcher state to English by default
+    state.detailLanguage = "en";
+    updateLanguageButtonsDOM("en");
+    
+    // Render profile details in selected language
+    renderProfileDetailContent(profile, "en");
+}
+
+function changeDetailLanguage(lang) {
+    if (!state.activeProfileDetail) return;
+    const profile = state.profiles.find(p => p.id === state.activeProfileDetail);
+    if (!profile) return;
+    
+    state.detailLanguage = lang;
+    updateLanguageButtonsDOM(lang);
+    renderProfileDetailContent(profile, lang);
+}
+
+function updateLanguageButtonsDOM(lang) {
+    const btnEn = document.getElementById("lang-btn-en");
+    const btnMl = document.getElementById("lang-btn-ml");
+    if (!btnEn || !btnMl) return;
+    
+    if (lang === 'en') {
+        btnEn.style.background = 'var(--primary)';
+        btnEn.style.color = 'white';
+        btnEn.style.borderColor = 'var(--primary)';
+        btnEn.classList.add("active");
+        
+        btnMl.style.background = 'transparent';
+        btnMl.style.color = 'var(--text-dark)';
+        btnMl.style.borderColor = 'var(--border)';
+        btnMl.classList.remove("active");
+    } else {
+        btnMl.style.background = 'var(--primary)';
+        btnMl.style.color = 'white';
+        btnMl.style.borderColor = 'var(--primary)';
+        btnMl.classList.add("active");
+        
+        btnEn.style.background = 'transparent';
+        btnEn.style.color = 'var(--text-dark)';
+        btnEn.style.borderColor = 'var(--border)';
+        btnEn.classList.remove("active");
+    }
+}
+
+// English to Malayalam Translation Mappings
+const ML_TRANSLATION_MAP = {
+    // English Values -> Malayalam Values
+    "Software Engineer": "സോഫ്റ്റ്‌വെയർ എഞ്ചിനീയർ",
+    "Doctor": "ഡോക്ടർ",
+    "Banker": "ബാങ്കർ",
+    "UI/UX Designer": "ഡിസൈനർ",
+    "Civil Servant": "സിവിൽ സെർവന്റ്",
+    "Business Owner": "ബിസിനസുകാരൻ",
+    "Senior Software Developer": "സീനിയർ സോഫ്റ്റ്‌വെയർ ഡെവലപ്പർ",
+    "IT Professional, Doctor, or Engineer": "ഐ.ടി രംഗം, ഡോക്ടർ, അല്ലെങ്കിൽ എഞ്ചിനീയർ",
+    "Finance, Banking or IT Analyst": "ഫിനാൻസ്, ബാങ്കിംഗ് അല്ലെങ്കിൽ ഐ.ടി അനലിസ്റ്റ്",
+    "Creative or Tech Professional": "ക്രിയേറ്റീവ് അല്ലെങ്കിൽ ടെക് പ്രൊഫഷണൽ",
+    "IT Professional or Doctor": "ഐ.ടി ഉദ്യോഗസ്ഥൻ അല്ലെങ്കിൽ ഡോക്ടർ",
+    
+    "Never Married": "അവിവാഹിതൻ / അവിവാഹിത",
+    
+    "Christian": "ക്രിസ്ത്യൻ",
+    "Hindu": "ഹിന്ദു",
+    "Muslim": "മുസ്ലിം",
+    "Syrian Orthodox": "സിറിയൻ ഓർത്തഡോക്സ്",
+    "Tamil Brahmin": "തമിഴ് ബ്രാഹ്മണൻ",
+    "Brahmin": "ബ്രാഹ്മണൻ",
+    "Patel": "പട്ടേൽ",
+    
+    "Malayalam": "മലയാളം",
+    "Hindi": "ഹിന്ദി",
+    "Tamil": "തമിഴ്",
+    "Telugu": "തെലുങ്ക്",
+    "English": "ഇംഗ്ലീഷ്",
+    
+    "Kochi": "കൊച്ചി",
+    "Trivandrum": "തിരുവനന്തപുരം",
+    "Kozhikode": "കോഴിക്കോട്",
+    "Thrissur": "തൃശ്ശൂർ",
+    "Kollam": "കൊല്ലം",
+    "Alappuzha": "ആലപ്പുഴ",
+    "Palakkad": "പാലക്കാട്",
+    "Kottayam": "കോട്ടയം",
+    "Kannur": "കണ്ണൂർ",
+    "Bangalore": "ബാംഗ്ലൂർ",
+    "Mumbai": "മുംബൈ",
+    "Chennai": "ചെന്നൈ",
+    
+    "Non-Vegetarian": "മാംസാഹാരി",
+    "Vegetarian": "സസ്യഹാരി",
+    "No / No": "ഇല്ല / ഇല്ല",
+    
+    "Moderate": "മധ്യമ നിലപാട്",
+    "Traditional": "പരമ്പരാഗതം",
+    "Liberal": "സ്വതന്ത്ര ചിന്താഗതി",
+    
+    "Nuclear Family": "ചെറിയ കുടുംബം",
+    "Joint Family": "കൂട്ടുകുടുംബം",
+    
+    "Retired Government Officer": "റിട്ടയേർഡ് സർക്കാർ ഉദ്യോഗസ്ഥൻ",
+    "High School Teacher": "ഹൈസ്കൂൾ അധ്യാപിക",
+    "Homemaker": "വീട്ടമ്മ",
+    "Senior Advocate": "സീനിയർ അഡ്വക്കേറ്റ്",
+    "Carnatic Vocalist": "കർണാടക സംഗീതജ്ഞ",
+    "Chartered Accountant": "ചാർട്ടേഡ് അക്കൗണ്ടന്റ്",
+    "Interior Designer": "ഇന്റീരിയർ ഡിസൈനർ",
+    
+    "None": "ഇല്ല",
+    "0": "ഇല്ല",
+    "1": "1",
+    "2": "2",
+    "1 (Married)": "1 (വിവാഹിതൻ)",
+    "Graduate or Post Graduate": "ബിരുദം അല്ലെങ്കിൽ ബിരുദാനന്തര ബിരുദം",
+    "Graduate Professional": "ബിരുദധാരിയായ ഉദ്യോഗസ്ഥൻ"
+};
+
+const ML_MOCK_PROFILES_ABOUT = {
+    "WM-10294": "പരമ്പരാഗത മൂല്യങ്ങളും ആധുനിക വീക്ഷണങ്ങളും ഒത്തുപോകുന്ന സന്തുഷ്ടയായ, ഔദ്യോഗിക രംഗത്ത് ശ്രദ്ധ കേന്ദ്രീകരിക്കുന്ന ഒരു വ്യക്തിയാണ് അവൾ. വാരാന്ത്യങ്ങളിൽ സംഗീതം കേൾക്കാനും യാത്ര ചെയ്യാനും പുതിയ വിഭവങ്ങൾ പരീക്ഷിക്കാനും അവൾ ഇഷ്ടപ്പെടുന്നു.",
+    "WM-28190": "പരസ്പര ബഹുമാനത്തിലും വ്യക്തമായ ആശയവിനിമയത്തിലും വിശ്വസിക്കുന്ന ലളിതവും വിനയമുള്ളതുമായ ഒരു വ്യക്തി. ഫിൻടെക് ട്രെൻഡുകൾ പഠിക്കാനും, ചരിത്ര നോവലുകൾ വായിക്കാനും, പശ്ചിമഘട്ടത്തിൽ ട്രെക്കിംഗ് നടത്താനും ഞാൻ ഇഷ്ടപ്പെടുന്നു.",
+    "WM-40192": "ദൃശ്യകലകളും ശാസ്ത്രീയ സംഗീതവും പൈതൃക സ്ഥലങ്ങൾ സന്ദർശിക്കുന്നതും ഇഷ്ടപ്പെടുന്ന സർഗ്ഗാത്മകമായ ഒരു മനസ്സ്. സ്വന്തം ജോലിയോട് താല്പര്യമുള്ളവനും കലയെയും സംസ്കാരത്തെയും വിലമതിക്കുന്നതുമായ ഒരു പങ്കാളിയെ തിരയുന്നു.",
+    "WM-89102": "തിരക്കേറിയ ഔദ്യോഗിക ജീവിതവും സ്ക്വാഷ്, പുതിയ പാചക പരീക്ഷണങ്ങൾ, സന്നദ്ധസേവനം തുടങ്ങിയ ഹോബികളും ഒരേപോലെ കൊണ്ടുപോകുന്ന അഭിലാഷിയായ ഒരു ബാങ്കർ. സ്വതന്ത്രയും കുടുംബത്തിന് പ്രാധാന്യം നൽകുന്നതുമായ പങ്കാളിയെ തിരയുന്നു."
+};
+
+function renderProfileDetailContent(profile, lang) {
+    const isEn = lang === 'en';
+    
+    // Helper to translate value
+    const t = (val) => {
+        if (!val) return "";
+        if (isEn) return val;
+        const strVal = String(val).trim();
+        if (ML_TRANSLATION_MAP[strVal]) return ML_TRANSLATION_MAP[strVal];
+        
+        let res = strVal;
+        res = res.replace(" Years", " വർഷം");
+        res = res.replace(" Years Range", " വർഷം");
+        res = res.replace(" (Married)", " (വിവാഹിതൻ/വിവാഹിത)");
+        res = res.replace(" (Unmarried)", " (അവിവാഹിതൻ/അവിവാഹിത)");
+        res = res.replace("Never Married", "അവിവാഹിതൻ / അവിവാഹിത");
+        res = res.replace("None", "ഇല്ല");
+        res = res.replace(", India", ", ഇന്ത്യ");
+        
+        // Loop over vocabulary to translate occurrences
+        for (let eng in ML_TRANSLATION_MAP) {
+            if (eng.length > 3 && res.includes(eng)) {
+                res = res.replace(eng, ML_TRANSLATION_MAP[eng]);
+            }
+        }
+        return res;
+    };
+    
+    // Helper to translate static labels
+    const setLabel = (id, enText, mlText) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = isEn ? enText : mlText;
+    };
+    
+    const isFemale = profile.gender === 'female';
+    
+    setLabel("lbl-detail-about-title", isFemale ? "About Her" : "About Him", isFemale ? "അവളെക്കുറിച്ച്" : "അവനെക്കുറിച്ച്");
+    setLabel("lbl-detail-basic-title", "Basic Information", "അടിസ്ഥാന വിവരങ്ങൾ");
+    setLabel("lbl-detail-age", "Age", "വയസ്സ്");
+    setLabel("lbl-detail-height", "Height", "ഉയരം");
+    setLabel("lbl-detail-mothertongue", "Mother Tongue", "മാതൃഭാഷ");
+    setLabel("lbl-detail-marital", "Marital Status", "വിവാഹ നില");
+    setLabel("lbl-detail-religion", "Religion", "മതം");
+    setLabel("lbl-detail-caste", "Caste / Sect", "ജാതി");
+    
+    setLabel("lbl-detail-edu-title", "Educational Background", "വിദ്യാഭ്യാസം");
+    setLabel("lbl-detail-education", "Highest Education", "വിദ്യാഭ്യാസം");
+    setLabel("lbl-detail-college", "University / College", "കോളേജ് / സർവ്വകലാശാല");
+    
+    setLabel("lbl-detail-career-title", "Professional Background", "ഔദ്യോഗിക വിവരങ്ങൾ");
+    setLabel("lbl-detail-occupation", "Occupation", "ജോലി");
+    setLabel("lbl-detail-employer", "Employed In", "സ്ഥാപനം");
+    setLabel("lbl-detail-income", "Annual Income", "വാർഷിക വരുമാനം");
+    setLabel("lbl-detail-work-location", "Work Location", "ജോലിസ്ഥലം");
+    
+    setLabel("lbl-detail-family-title", "Family Background", "കുടുംബ വിവരങ്ങൾ");
+    setLabel("lbl-detail-family-values", "Family Values", "കുടുംബ മഹിമ");
+    setLabel("lbl-detail-family-type", "Family Type", "കുടുംബ രീതി");
+    setLabel("lbl-detail-father", "Father's Profession", "അച്ഛന്റെ ജോലി");
+    setLabel("lbl-detail-mother", "Mother's Profession", "അമ്മയുടെ ജോലി");
+    setLabel("lbl-detail-brothers", "Brothers", "സহോദരന്മാർ");
+    setLabel("lbl-detail-sisters", "Sisters", "സഹോദരിമാർ");
+    
+    setLabel("lbl-detail-lifestyle-title", "Lifestyle Details", "ജീവിത രീതി");
+    setLabel("lbl-detail-diet", "Dietary Habits", "ഭക്ഷണരീതി");
+    setLabel("lbl-detail-lifestyle", "Drinking / Smoking", "ശീലങ്ങൾ");
+    
+    setLabel("lbl-detail-pref-title", "Partner Expectations", "പങ്കാളിയുടെ വിവരങ്ങൾ");
+    setLabel("lbl-detail-pref-sub", 
+             isFemale ? "What she is looking for in a partner:" : "What he is looking for in a partner:", 
+             isFemale ? "ആഗ്രഹിക്കുന്ന പങ്കാളിയുടെ വിവരങ്ങൾ:" : "ആഗ്രഹിക്കുന്ന പങ്കാളിയുടെ വിവരങ്ങൾ:");
+    setLabel("lbl-detail-pref-age", "Age Range", "വയസ്സ് പരിധി");
+    setLabel("lbl-detail-pref-height", "Min Height", "ഉയര പരിധി");
+    setLabel("lbl-detail-pref-religion", "Religion", "മതവും ജാതിയും");
+    setLabel("lbl-detail-pref-education", "Education", "വിദ്യാഭ്യാസം");
+    setLabel("lbl-detail-pref-profession", "Occupation", "ജോലി");
+    setLabel("lbl-detail-pref-location", "Location Pref", "സ്ഥലം");
+    
+    // Fill dynamic content
+    document.getElementById("detail-about-text").textContent = !isEn && ML_MOCK_PROFILES_ABOUT[profile.id] ? ML_MOCK_PROFILES_ABOUT[profile.id] : profile.about;
     document.getElementById("detail-fullname").textContent = profile.name;
-    document.getElementById("detail-primary-occupation").textContent = profile.occupation;
-    document.getElementById("detail-primary-city").textContent = `${profile.location}, India`;
+    document.getElementById("detail-primary-occupation").textContent = t(profile.occupation);
+    document.getElementById("detail-primary-city").textContent = `${t(profile.location)}, ${isEn ? "India" : "ഇന്ത്യ"}`;
     document.getElementById("detail-profile-id").textContent = `ID: ${profile.id}`;
     
-    // Tab: About Her
-    document.getElementById("detail-about-text").textContent = profile.about;
-    document.getElementById("detail-age").textContent = `${profile.age} Years`;
+    document.getElementById("detail-age").textContent = `${profile.age}${isEn ? " Years" : " വർഷം"}`;
     document.getElementById("detail-height").textContent = profile.height;
-    document.getElementById("detail-mothertongue").textContent = profile.mothertongue;
-    document.getElementById("detail-marital").textContent = "Never Married";
-    document.getElementById("detail-religion").textContent = profile.religion;
-    document.getElementById("detail-caste").textContent = profile.caste;
+    document.getElementById("detail-mothertongue").textContent = t(profile.mothertongue);
+    document.getElementById("detail-marital").textContent = isEn ? "Never Married" : "അവിവാഹിതൻ / അവിവാഹിത";
+    document.getElementById("detail-religion").textContent = t(profile.religion);
+    document.getElementById("detail-caste").textContent = t(profile.caste);
     
-    // Tab: Career & Education
-    document.getElementById("detail-education").textContent = profile.education;
-    document.getElementById("detail-college").textContent = profile.college;
-    document.getElementById("detail-occupation").textContent = profile.occupation;
-    document.getElementById("detail-employer").textContent = profile.employer;
-    document.getElementById("detail-income").textContent = profile.income;
-    document.getElementById("detail-work-location").textContent = `${profile.location}, India`;
+    document.getElementById("detail-education").textContent = t(profile.education);
+    document.getElementById("detail-college").textContent = t(profile.college);
+    document.getElementById("detail-occupation").textContent = t(profile.occupation);
+    document.getElementById("detail-employer").textContent = t(profile.employer);
+    document.getElementById("detail-income").textContent = t(profile.income);
+    document.getElementById("detail-work-location").textContent = `${t(profile.location)}, ${isEn ? "India" : "ഇന്ത്യ"}`;
     
-    // Tab: Lifestyle & Family
-    document.getElementById("detail-family-values").textContent = profile.familyValues;
-    document.getElementById("detail-family-type").textContent = profile.familyType;
-    document.getElementById("detail-father").textContent = profile.father;
-    document.getElementById("detail-mother").textContent = profile.mother;
-    document.getElementById("detail-brothers").textContent = profile.brothers;
-    document.getElementById("detail-sisters").textContent = profile.sisters;
-    document.getElementById("detail-diet").textContent = profile.diet;
-    document.getElementById("detail-lifestyle").textContent = profile.lifestyle;
+    document.getElementById("detail-family-values").textContent = t(profile.familyValues);
+    document.getElementById("detail-family-type").textContent = t(profile.familyType);
+    document.getElementById("detail-father").textContent = t(profile.father);
+    document.getElementById("detail-mother").textContent = t(profile.mother);
+    document.getElementById("detail-brothers").textContent = t(String(profile.brothers));
+    document.getElementById("detail-sisters").textContent = t(String(profile.sisters));
+    document.getElementById("detail-diet").textContent = t(profile.diet);
+    document.getElementById("detail-lifestyle").textContent = t(profile.lifestyle);
     
-    // Tab: Partner Preferences
-    document.getElementById("detail-pref-age").textContent = `${profile.prefAgeMin} - ${profile.prefAgeMax} Years`;
+    document.getElementById("detail-pref-age").textContent = `${profile.prefAgeMin} - ${profile.prefAgeMax}${isEn ? " Years" : " വർഷം"}`;
     document.getElementById("detail-pref-height").textContent = profile.prefHeight;
-    document.getElementById("detail-pref-religion").textContent = `${profile.prefReligion} (${profile.caste})`;
-    document.getElementById("detail-pref-education").textContent = "Graduate or Post Graduate";
-    document.getElementById("detail-pref-profession").textContent = profile.prefOccupation;
-    document.getElementById("detail-pref-location").textContent = profile.prefLocation;
-    
-    // Show about tab panel by default
-    setProfileTab("about");
+    document.getElementById("detail-pref-religion").textContent = `${t(profile.prefReligion)} (${t(profile.caste)})`;
+    document.getElementById("detail-pref-education").textContent = isEn ? "Graduate or Post Graduate" : "ബിരുദം അല്ലെങ്കിൽ ബിരുദാനന്തര ബിരുദം";
+    document.getElementById("detail-pref-profession").textContent = t(profile.prefOccupation);
+    document.getElementById("detail-pref-location").textContent = t(profile.prefLocation);
 }
 
 function setProfileTab(tabName) {
@@ -1590,10 +1808,18 @@ function handleAdminFormSubmit(event) {
     const religion = document.getElementById("admin-religion").value;
     const caste = document.getElementById("admin-caste").value;
     const mothertongue = document.getElementById("admin-mothertongue").value;
-    const location = document.getElementById("admin-location").value;
+    let location = document.getElementById("admin-location").value;
+    if (location === "Others") {
+        location = document.getElementById("admin-location-custom").value.trim() || "Others";
+    }
+    
     const education = document.getElementById("admin-education").value;
     const college = document.getElementById("admin-college").value;
-    const occupation = document.getElementById("admin-profession").value;
+    
+    let occupation = document.getElementById("admin-profession").value;
+    if (occupation === "Others") {
+        occupation = document.getElementById("admin-profession-custom").value.trim() || "Others";
+    }
     const employer = document.getElementById("admin-employer").value;
     const income = document.getElementById("admin-income").value;
     const diet = document.getElementById("admin-diet").value;
@@ -2068,4 +2294,26 @@ function base64ToBlob(base64Data, contentType) {
         byteArrays.push(byteArray);
     }
     return new Blob(byteArrays, {type: contentType});
+}
+
+// Global helper to show/hide custom text inputs for "Others" select options
+function toggleCustomInput(selectEl, customGroupId) {
+    const group = document.getElementById(customGroupId);
+    if (!group) return;
+    
+    if (selectEl.value === "Others") {
+        group.classList.remove("hidden");
+        const input = group.querySelector("input");
+        if (input) {
+            input.required = true;
+            input.focus();
+        }
+    } else {
+        group.classList.add("hidden");
+        const input = group.querySelector("input");
+        if (input) {
+            input.required = false;
+            input.value = "";
+        }
+    }
 }
