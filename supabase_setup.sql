@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS public.users_profiles (
     pref_religion TEXT DEFAULT 'all',
     pref_location TEXT DEFAULT 'all',
     is_admin BOOLEAN DEFAULT FALSE,
+    last_session_id TEXT DEFAULT '',
     created_at TIMESTAMPTZ DEFAULT now()
 );
 
@@ -162,5 +163,5 @@ BEGIN;
   DROP PUBLICATION IF EXISTS supabase_realtime;
   
   -- Create publication
-  CREATE PUBLICATION supabase_realtime FOR TABLE public.messages, public.profiles;
+  CREATE PUBLICATION supabase_realtime FOR TABLE public.messages, public.profiles, public.users_profiles;
 COMMIT;

@@ -409,9 +409,17 @@ function updateHeaderAuthDOM() {
         }
     }
     
+    const mobLogin = document.getElementById("mobile-nav-login");
+    const mobRegister = document.getElementById("mobile-nav-register");
+    const mobLogout = document.getElementById("mobile-nav-logout");
+    
     if (state.currentUser) {
         authArea.classList.add("hidden");
         userChip.classList.remove("hidden");
+        
+        if (mobLogin) mobLogin.classList.add("hidden");
+        if (mobRegister) mobRegister.classList.add("hidden");
+        if (mobLogout) mobLogout.classList.remove("hidden");
         
         // Populate profile chip
         document.getElementById("header-user-name").textContent = state.currentUser.name;
@@ -427,6 +435,10 @@ function updateHeaderAuthDOM() {
     } else {
         authArea.classList.remove("hidden");
         userChip.classList.add("hidden");
+        
+        if (mobLogin) mobLogin.classList.remove("hidden");
+        if (mobRegister) mobRegister.classList.remove("hidden");
+        if (mobLogout) mobLogout.classList.add("hidden");
         
         // Hide auth-only links
         hiddenAuthLinks.forEach(link => link.classList.add("hidden-auth"));
@@ -1978,6 +1990,21 @@ async function loadSupabaseData() {
                 .single();
                 
             if (profile) {
+                // Admin Single-Session Lock Check
+                if (profile.is_admin) {
+                    const localSessId = localStorage.getItem("wm_admin_session_id");
+                    if (profile.last_session_id && localSessId && profile.last_session_id !== localSessId) {
+                        setTimeout(() => {
+                            handleLogout();
+                            showToast("You have been logged out because this admin account was logged in on another device.", "danger");
+                        }, 500);
+                        return;
+                    }
+                    setTimeout(() => {
+                        setupAdminSessionLock();
+                    }, 1000);
+                }
+                
                 state.currentUser = {
                     id: profile.id,
                     name: profile.name,
@@ -2191,6 +2218,19 @@ async function handleLoginSubmitSupabase(email, password) {
         const user = authData.user;
         if (user) {
             await loadSupabaseData();
+            
+            // Setup single session lock if admin
+            if (state.currentUser && state.currentUser.isAdmin) {
+                const newSessId = 'sess_' + Math.random().toString(36).substr(2, 9);
+                state.adminSessionId = newSessId;
+                localStorage.setItem("wm_admin_session_id", newSessId);
+                
+                await supabaseClient
+                    .from('users_profiles')
+                    .update({ last_session_id: newSessId })
+                    .eq('id', state.currentUser.id);
+            }
+            
             await loadChatMessages();
             
             showToast("Logged in successfully to Supabase!", "success");
@@ -2428,4 +2468,34 @@ function startBackgroundSlideshows() {
             authSlides[authIndex].classList.add("active");
         }
     }, 5000);
+}
+
+function setupAdminSessionLock() {
+    if (!state.currentUser || !state.currentUser.isAdmin) return;
+    
+    const currentSessId = localStorage.getItem("wm_admin_session_id") || state.adminSessionId;
+    if (!currentSessId) return;
+    
+    const channel = supabaseClient
+        .channel('admin-session-lock')
+        .on(
+            'postgres_changes',
+            {
+                event: 'UPDATE',
+                schema: 'public',
+                table: 'users_profiles',
+                filter: `id=eq.${state.currentUser.id}`
+            },
+            (payload) => {
+                const updatedProfile = payload.new;
+                if (updatedProfile && updatedProfile.last_session_id) {
+                    if (updatedProfile.last_session_id !== currentSessId) {
+                        channel.unsubscribe();
+                        handleLogout();
+                        showToast("You have been logged out because this admin account was logged in on another device.", "danger");
+                    }
+                }
+            }
+        )
+        .subscribe();
 }

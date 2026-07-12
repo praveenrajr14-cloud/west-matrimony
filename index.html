@@ -29,6 +29,15 @@
                 <span class="logo-text">West <span class="accent-text">Matrimony</span></span>
             </a>
             
+            <!-- Mobile Menu Toggle Button -->
+            <button class="mobile-menu-toggle" id="mobile-toggle-btn" onclick="toggleMobileMenu()" aria-label="Toggle Navigation">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            
             <nav class="main-nav" id="app-nav-menu">
                 <ul class="nav-list">
                     <li><a href="#" class="nav-link active" id="nav-link-home" onclick="event.preventDefault(); handleNavClick('landing')">Home</a></li>
@@ -36,6 +45,9 @@
                     <li><a href="#" class="nav-link" id="nav-link-browse" onclick="event.preventDefault(); handleNavClick('browse')">Browse Matches</a></li>
                     <li><a href="#" class="nav-link" id="nav-link-shortlist" onclick="event.preventDefault(); handleNavClick('shortlist')">Shortlist & Chats</a></li>
                     <li><a href="#" class="nav-link hidden" id="nav-link-admin" onclick="event.preventDefault(); switchView('admin')">Admin Panel</a></li>
+                    <li class="mobile-auth-link" id="mobile-nav-login"><a href="#" class="nav-link" onclick="event.preventDefault(); switchView('auth', 'login')">Login</a></li>
+                    <li class="mobile-auth-link" id="mobile-nav-register"><a href="#" class="nav-link" onclick="event.preventDefault(); switchView('auth', 'register')">Register Free</a></li>
+                    <li class="mobile-auth-link hidden" id="mobile-nav-logout"><a href="#" class="nav-link" onclick="event.preventDefault(); handleLogout()">Logout</a></li>
                 </ul>
             </nav>
 
