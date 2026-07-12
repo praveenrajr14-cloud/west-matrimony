@@ -507,13 +507,13 @@ textarea.form-control {
 .quick-search-panel {
     flex: 0.8;
     min-width: 380px;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(26, 0, 6, 0.65);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(212, 175, 55, 0.25);
     border-radius: var(--border-radius-md);
     padding: 32px;
-    box-shadow: 0 24px 50px rgba(0,0,0,0.3);
+    box-shadow: 0 24px 50px rgba(0,0,0,0.4);
 }
 
 .quick-search-panel .panel-title {
@@ -870,22 +870,38 @@ textarea.form-control {
     display: flex;
     justify-content: center;
     align-items: center;
+    background: radial-gradient(circle at 10% 20%, rgb(128, 0, 32) 0%, rgb(40, 0, 10) 90.1%);
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-card-container::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(rgba(212, 175, 55, 0.1) 1px, transparent 1px);
+    background-size: 24px 24px;
+    opacity: 0.3;
+    pointer-events: none;
 }
 
 .auth-card {
-    background-color: var(--bg-white);
+    background: rgba(26, 0, 6, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(212, 175, 55, 0.25);
     border-radius: var(--border-radius-lg);
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 24px 50px rgba(0,0,0,0.5);
     width: 100%;
     max-width: 550px;
     overflow: hidden;
+    color: var(--bg-white);
 }
 
 .auth-tabs {
     display: flex;
-    border-bottom: 1px solid var(--border-color);
-    background-color: var(--bg-warm);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
 .auth-tab-btn {
@@ -897,14 +913,14 @@ textarea.form-control {
     background: none;
     border: none;
     cursor: pointer;
-    color: var(--text-light);
+    color: rgba(255, 255, 255, 0.6);
     transition: var(--transition-fast);
 }
 
 .auth-tab-btn.active {
-    background-color: var(--bg-white);
-    color: var(--primary);
-    border-bottom: 3px solid var(--primary);
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--accent);
+    border-bottom: 3px solid var(--accent);
 }
 
 .auth-form-panel {
@@ -919,13 +935,13 @@ textarea.form-control {
 
 .auth-header h2 {
     font-size: 1.8rem;
-    color: var(--primary);
+    color: var(--accent);
     margin-bottom: 8px;
 }
 
 .auth-header p {
     font-size: 0.95rem;
-    color: var(--text-light);
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .auth-extra-actions {
@@ -937,8 +953,53 @@ textarea.form-control {
 }
 
 .forgot-pass-link {
-    color: var(--primary);
-    font-weight: 600;
+    color: var(--accent);
+}
+
+.auth-card label {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.auth-card .form-control {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--bg-white);
+}
+
+.auth-card .form-control:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
+}
+
+.auth-card .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.auth-card .form-control option {
+    background-color: #3b000b;
+    color: var(--bg-white);
+}
+
+.auth-card .step-num {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.auth-card .step-indicator.active .step-num {
+    background-color: var(--accent);
+    color: #1a0006;
+}
+
+.auth-card .step-name {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.auth-card .step-indicator.active .step-name {
+    color: var(--accent);
+}
+
+.auth-card .step-line {
+    background-color: rgba(255, 255, 255, 0.15);
 }
 
 .btn-auth {

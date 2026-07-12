@@ -80,10 +80,16 @@
             <div class="hero-section">
                 <div class="hero-overlay"></div>
                 <div class="hero-content-wrapper">
-                    <div class="hero-text">
+                    <div class="hero-text" style="display: flex; flex-direction: column; justify-content: center;">
                         <span class="badge" id="hero-badge">No. 1 Trusted Matchmaking Service</span>
                         <h1 class="hero-title" id="hero-main-title">Crafting Perfect Matches, Creating Forever Stories</h1>
                         <p class="hero-subtitle">Find a life partner who shares your values, culture, and aspirations. Explore verified profiles with complete privacy control.</p>
+                        <div style="margin-top: 15px; margin-bottom: 25px; border-radius: var(--border-radius-md); overflow: hidden; border: 2px solid rgba(212,175,55,0.4); box-shadow: 0 15px 35px rgba(0,0,0,0.5); max-width: 480px; position: relative;">
+                            <img src="assets/images/hero_couple.png" alt="Indian Matrimony Couple" style="width: 100%; display: block; object-fit: cover; height: 280px; filter: brightness(0.95);">
+                            <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(26,0,6,0.9)); padding: 12px; text-align: center;">
+                                <span style="font-size: 13px; color: var(--accent); font-weight: 600; letter-spacing: 1px;">Begin Your Journey To Forever</span>
+                            </div>
+                        </div>
                         <div class="hero-cta-group">
                             <button class="btn btn-primary btn-large" id="btn-hero-start" onclick="switchView('auth', 'register')">Get Started For Free</button>
                             <button class="btn btn-secondary btn-large" id="btn-hero-browse" onclick="switchView('browse')">Browse Profiles</button>
@@ -275,15 +281,10 @@
                                     <span class="checkmark"></span>
                                     Keep me signed in
                                 </label>
-                                <a href="#" class="forgot-pass-link" onclick="event.preventDefault(); alert('For demo, use password: password123')">Forgot Password?</a>
+                                <a href="#" class="forgot-pass-link" onclick="event.preventDefault(); alert('Please contact support at westmatrimoney64rm@gmail.com to reset your password.')">Forgot Password?</a>
                             </div>
                             <button type="submit" class="btn btn-primary btn-block btn-auth" id="btn-login-submit">Login Account</button>
                         </form>
-                        
-                        <div class="demo-credentials">
-                            <strong>Demo Access:</strong>
-                            <p>Email: <code>user@example.com</code> / Password: <code>password123</code></p>
-                        </div>
                     </div>
                     
                     <!-- Multi-Step Registration Form Panel -->
@@ -357,7 +358,7 @@
                                 <div class="form-row">
                                     <div class="form-group col">
                                         <label for="reg-religion">Religion</label>
-                                        <select class="form-control" id="reg-religion">
+                                        <select class="form-control" id="reg-religion" onchange="toggleRegStar(this)">
                                             <option value="Christian">Christian</option>
                                             <option value="Hindu">Hindu</option>
                                             <option value="Muslim">Muslim</option>
@@ -366,6 +367,39 @@
                                     <div class="form-group col">
                                         <label for="reg-caste">Caste / Sect</label>
                                         <input type="text" class="form-control" id="reg-caste" placeholder="General, Syrian, Roman, etc.">
+                                    </div>
+                                    <div class="form-group col hidden" id="reg-star-group">
+                                        <label for="reg-star">Star (Naal)</label>
+                                        <select class="form-control" id="reg-star">
+                                            <option value="None">None</option>
+                                            <option value="Aswathy">Aswathy</option>
+                                            <option value="Bharani">Bharani</option>
+                                            <option value="Karthika">Karthika</option>
+                                            <option value="Rohini">Rohini</option>
+                                            <option value="Makayiram">Makayiram</option>
+                                            <option value="Thiruvathira">Thiruvathira</option>
+                                            <option value="Punartham">Punartham</option>
+                                            <option value="Pooyam">Pooyam</option>
+                                            <option value="Ayilyam">Ayilyam</option>
+                                            <option value="Makham">Makham</option>
+                                            <option value="Pooram">Pooram</option>
+                                            <option value="Uthram">Uthram</option>
+                                            <option value="Atham">Atham</option>
+                                            <option value="Chithira">Chithira</option>
+                                            <option value="Chothi">Chothi</option>
+                                            <option value="Vishakham">Vishakham</option>
+                                            <option value="Anizham">Anizham</option>
+                                            <option value="Thrikketa">Thrikketa</option>
+                                            <option value="Moolam">Moolam</option>
+                                            <option value="Pooradam">Pooradam</option>
+                                            <option value="Uthradam">Uthradam</option>
+                                            <option value="Thiruvonam">Thiruvonam</option>
+                                            <option value="Avittam">Avittam</option>
+                                            <option value="Chathayam">Chathayam</option>
+                                            <option value="Pooruruttathy">Pooruruttathy</option>
+                                            <option value="Uthruttathy">Uthruttathy</option>
+                                            <option value="Revathy">Revathy</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="form-row">
@@ -728,6 +762,7 @@
                                     <div class="info-item"><span id="lbl-detail-marital">Marital Status</span> <strong id="detail-marital">Never Married</strong></div>
                                     <div class="info-item"><span id="lbl-detail-religion">Religion</span> <strong id="detail-religion">Christian</strong></div>
                                     <div class="info-item"><span id="lbl-detail-caste">Caste / Sect</span> <strong id="detail-caste">Syrian Orthodox</strong></div>
+                                    <div class="info-item hidden" id="detail-star-item"><span id="lbl-detail-star">Star (Naal)</span> <strong id="detail-star">None</strong></div>
                                 </div>
                             </div>
                         </div>
@@ -1062,7 +1097,7 @@
                         <div class="form-row">
                             <div class="form-group col">
                                 <label for="admin-religion">Religion</label>
-                                <select class="form-control" id="admin-religion" required>
+                                <select class="form-control" id="admin-religion" required onchange="toggleAdminStar(this)">
                                     <option value="Christian">Christian</option>
                                     <option value="Hindu" selected>Hindu</option>
                                     <option value="Muslim">Muslim</option>
@@ -1071,6 +1106,39 @@
                             <div class="form-group col">
                                 <label for="admin-caste">Caste / Sect</label>
                                 <input type="text" class="form-control" id="admin-caste" placeholder="e.g. Nair, General, Syrian" required>
+                            </div>
+                            <div class="form-group col" id="admin-star-group">
+                                <label for="admin-star">Star (Naal)</label>
+                                <select class="form-control" id="admin-star">
+                                    <option value="None">None</option>
+                                    <option value="Aswathy">Aswathy</option>
+                                    <option value="Bharani">Bharani</option>
+                                    <option value="Karthika">Karthika</option>
+                                    <option value="Rohini">Rohini</option>
+                                    <option value="Makayiram">Makayiram</option>
+                                    <option value="Thiruvathira">Thiruvathira</option>
+                                    <option value="Punartham">Punartham</option>
+                                    <option value="Pooyam">Pooyam</option>
+                                    <option value="Ayilyam">Ayilyam</option>
+                                    <option value="Makham">Makham</option>
+                                    <option value="Pooram">Pooram</option>
+                                    <option value="Uthram">Uthram</option>
+                                    <option value="Atham">Atham</option>
+                                    <option value="Chithira">Chithira</option>
+                                    <option value="Chothi">Chothi</option>
+                                    <option value="Vishakham">Vishakham</option>
+                                    <option value="Anizham">Anizham</option>
+                                    <option value="Thrikketa">Thrikketa</option>
+                                    <option value="Moolam">Moolam</option>
+                                    <option value="Pooradam">Pooradam</option>
+                                    <option value="Uthradam">Uthradam</option>
+                                    <option value="Thiruvonam">Thiruvonam</option>
+                                    <option value="Avittam">Avittam</option>
+                                    <option value="Chathayam">Chathayam</option>
+                                    <option value="Pooruruttathy">Pooruruttathy</option>
+                                    <option value="Uthruttathy">Uthruttathy</option>
+                                    <option value="Revathy">Revathy</option>
+                                </select>
                             </div>
                         </div>
 
@@ -1313,6 +1381,13 @@
                         <li><a href="#" onclick="event.preventDefault(); alert('Demo Privacy Policy')">Privacy Policy</a></li>
                         <li><a href="#" onclick="event.preventDefault(); alert('Demo Terms of Use')">Terms of Use</a></li>
                         <li><a href="#" onclick="event.preventDefault(); alert('Demo Safety Tips')">Safety Tips</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Contact Us</h4>
+                    <ul>
+                        <li style="color: rgba(255, 255, 255, 0.6); margin-bottom: 8px; font-size: 13px;">Email: <a href="mailto:westmatrimoney64rm@gmail.com" style="color: var(--accent); text-decoration: none;">westmatrimoney64rm@gmail.com</a></li>
+                        <li style="color: rgba(255, 255, 255, 0.6); font-size: 13px;">Phone: <a href="tel:+919736469662" style="color: var(--accent); text-decoration: none;">+91 9736469662</a></li>
                     </ul>
                 </div>
             </div>

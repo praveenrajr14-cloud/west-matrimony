@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
     employer TEXT NOT NULL,
     income TEXT NOT NULL,
     location TEXT NOT NULL,
+    star TEXT DEFAULT 'None', -- Star / Nakshatram (specifically for Hindu profiles)
     image TEXT NOT NULL, -- Storage URL or local asset path
     about TEXT NOT NULL,
     family_values TEXT NOT NULL,
@@ -59,6 +60,7 @@ CREATE TABLE IF NOT EXISTS public.users_profiles (
     income TEXT NOT NULL,
     location TEXT NOT NULL,
     about TEXT NOT NULL,
+    star TEXT DEFAULT 'None',
     image TEXT DEFAULT '',
     pref_age_min INTEGER DEFAULT 20,
     pref_age_max INTEGER DEFAULT 45,

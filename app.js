@@ -34,6 +34,7 @@ const MOCK_PROFILES = [
         employer: "TCS Kochi",
         income: "₹12 - 15 Lakhs",
         location: "Kochi",
+        star: "None",
         image: "assets/images/profile_female_1.png",
         about: "A cheerful, career-oriented individual who balances traditional values with a modern outlook. She loves listening to music, traveling, and exploring new cuisines on weekends.",
         familyValues: "Moderate",
@@ -66,6 +67,7 @@ const MOCK_PROFILES = [
         employer: "Microsoft Bangalore",
         income: "₹24+ Lakhs",
         location: "Bangalore",
+        star: "Rohini",
         image: "assets/images/profile_male_1.png",
         about: "A simple, down-to-earth person who believes in mutual respect and clear communication. I enjoy working on fintech trends, reading historical fiction, and trekking in the Western Ghats.",
         familyValues: "Traditional",
@@ -98,6 +100,7 @@ const MOCK_PROFILES = [
         employer: "Freelancer / Startup Consultant",
         income: "₹15 - 18 Lakhs",
         location: "Chennai",
+        star: "Chothi",
         image: "assets/images/profile_female_2.png",
         about: "A creative mind who loves visual arts, classical music, and visiting heritage spots. Looking for a partner who is passionate about their work and values art and culture.",
         familyValues: "Liberal",
@@ -130,6 +133,7 @@ const MOCK_PROFILES = [
         employer: "HDFC Bank Mumbai",
         income: "₹18 - 22 Lakhs",
         location: "Mumbai",
+        star: "Uthradam",
         image: "assets/images/profile_male_2.png",
         about: "An ambitious banker who balances a busy professional life with hobbies like squash, culinary experimentation, and volunteering. Looking for a partner who is independent and family-focused.",
         familyValues: "Moderate",
@@ -626,6 +630,11 @@ function handleRegisterSubmit(event) {
     const mothertongue = document.getElementById("reg-mothertongue").value;
     const religion = document.getElementById("reg-religion").value;
     
+    let star = "None";
+    if (religion === "Hindu") {
+        star = document.getElementById("reg-star").value || "None";
+    }
+    
     let education = document.getElementById("reg-education").value;
     if (education === "Others") {
         education = document.getElementById("reg-education-custom").value.trim() || "Others";
@@ -651,6 +660,7 @@ function handleRegisterSubmit(event) {
         height: gender === "male" ? "5 ft 8 in" : "5 ft 3 in",
         religion: religion,
         caste: "General",
+        star: star,
         mothertongue: mothertongue,
         education: education,
         occupation: occupation,
@@ -1050,7 +1060,36 @@ const ML_TRANSLATION_MAP = {
     "2": "2",
     "1 (Married)": "1 (വിവാഹിതൻ)",
     "Graduate or Post Graduate": "ബിരുദം അല്ലെങ്കിൽ ബിരുദാനന്തര ബിരുദം",
-    "Graduate Professional": "ബിരുദധാരിയായ ഉദ്യോഗസ്ഥൻ"
+    "Graduate Professional": "ബിരുദധാരിയായ ഉദ്യോഗസ്ഥൻ",
+    
+    // Stars / Nakshatrams
+    "Aswathy": "അശ്വതി",
+    "Bharani": "ഭരണി",
+    "Karthika": "കാർത്തിക",
+    "Rohini": "രോഹിണി",
+    "Makayiram": "മകയിരം",
+    "Thiruvathira": "തിരുവാതിര",
+    "Punartham": "പുണർതം",
+    "Pooyam": "പൂയം",
+    "Ayilyam": "ആയില്യം",
+    "Makham": "മകം",
+    "Pooram": "പൂരം",
+    "Uthram": "ഉത്രം",
+    "Atham": "അത്തം",
+    "Chithira": "ചിത്ര",
+    "Chothi": "ചോതി",
+    "Vishakham": "വിശാഖം",
+    "Anizham": "അനിഴം",
+    "Thrikketa": "തൃക്കേട്ട",
+    "Moolam": "മൂലം",
+    "Pooradam": "പൂരാടം",
+    "Uthradam": "ഉത്രാടം",
+    "Thiruvonam": "തിരുവോണം",
+    "Avittam": "അവിട്ടം",
+    "Chathayam": "ചതയം",
+    "Pooruruttathy": "പൂരുരുട്ടാതി",
+    "Uthruttathy": "ഉത്രട്ടാതി",
+    "Revathy": "രേവതി"
 };
 
 const ML_MOCK_PROFILES_ABOUT = {
@@ -1151,6 +1190,18 @@ function renderProfileDetailContent(profile, lang) {
     document.getElementById("detail-marital").textContent = isEn ? "Never Married" : "അവിവാഹിതൻ / അവിവാഹിത";
     document.getElementById("detail-religion").textContent = t(profile.religion);
     document.getElementById("detail-caste").textContent = t(profile.caste);
+    
+    // Display Hindu Star (Naal) if religion is Hindu and star is set
+    const starItem = document.getElementById("detail-star-item");
+    if (starItem) {
+        if (profile.religion === "Hindu" && profile.star && profile.star !== "None") {
+            starItem.classList.remove("hidden");
+            document.getElementById("detail-star").textContent = t(profile.star);
+            setLabel("lbl-detail-star", "Star (Naal)", "നക്ഷത്രം (നാൾ)");
+        } else {
+            starItem.classList.add("hidden");
+        }
+    }
     
     document.getElementById("detail-education").textContent = t(profile.education);
     document.getElementById("detail-college").textContent = t(profile.college);
@@ -1808,6 +1859,12 @@ function handleAdminFormSubmit(event) {
     const religion = document.getElementById("admin-religion").value;
     const caste = document.getElementById("admin-caste").value;
     const mothertongue = document.getElementById("admin-mothertongue").value;
+    
+    let star = "None";
+    if (religion === "Hindu") {
+        star = document.getElementById("admin-star").value || "None";
+    }
+    
     let location = document.getElementById("admin-location").value;
     if (location === "Others") {
         location = document.getElementById("admin-location-custom").value.trim() || "Others";
@@ -1846,6 +1903,7 @@ function handleAdminFormSubmit(event) {
         height: height,
         religion: religion,
         caste: caste,
+        star: star,
         mothertongue: mothertongue,
         education: education,
         college: college,
@@ -1925,6 +1983,7 @@ async function loadSupabaseData() {
                     height: profile.height,
                     religion: profile.religion,
                     caste: profile.caste,
+                    star: profile.star || "None",
                     mothertongue: profile.mothertongue,
                     education: profile.education,
                     occupation: profile.occupation,
@@ -1979,6 +2038,7 @@ async function loadSupabaseData() {
                 height: p.height,
                 religion: p.religion,
                 caste: p.caste,
+                star: p.star || "None",
                 mothertongue: p.mothertongue,
                 education: p.education,
                 college: p.college,
@@ -2165,6 +2225,7 @@ async function handleRegisterSubmitSupabase(newUser, email, password) {
                     height: newUser.height,
                     religion: newUser.religion,
                     caste: newUser.caste,
+                    star: newUser.star || "None",
                     mothertongue: newUser.mothertongue,
                     education: newUser.education,
                     occupation: newUser.occupation,
@@ -2235,6 +2296,7 @@ async function publishAdminProfileSupabase(newProfile) {
                 height: newProfile.height,
                 religion: newProfile.religion,
                 caste: newProfile.caste,
+                star: newProfile.star || "None",
                 mothertongue: newProfile.mothertongue,
                 education: newProfile.education,
                 college: newProfile.college,
@@ -2315,5 +2377,27 @@ function toggleCustomInput(selectEl, customGroupId) {
             input.required = false;
             input.value = "";
         }
+    }
+}
+
+function toggleRegStar(selectEl) {
+    const starGroup = document.getElementById("reg-star-group");
+    if (!starGroup) return;
+    if (selectEl.value === "Hindu") {
+        starGroup.classList.remove("hidden");
+    } else {
+        starGroup.classList.add("hidden");
+        document.getElementById("reg-star").value = "None";
+    }
+}
+
+function toggleAdminStar(selectEl) {
+    const starGroup = document.getElementById("admin-star-group");
+    if (!starGroup) return;
+    if (selectEl.value === "Hindu") {
+        starGroup.classList.remove("hidden");
+    } else {
+        starGroup.classList.add("hidden");
+        document.getElementById("admin-star").value = "None";
     }
 }
