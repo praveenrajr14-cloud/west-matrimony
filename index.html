@@ -78,18 +78,17 @@
         <section class="view-section active" id="landing-view">
             <!-- Hero Banner -->
             <div class="hero-section">
+                <div class="hero-slideshow" id="hero-bg-slideshow">
+                    <div class="hero-slide active" style="background-image: url('assets/images/hero_couple.png');"></div>
+                    <div class="hero-slide" style="background-image: url('assets/images/hero_couple_2.png');"></div>
+                    <div class="hero-slide" style="background-image: url('assets/images/hero_couple_3.png');"></div>
+                </div>
                 <div class="hero-overlay"></div>
                 <div class="hero-content-wrapper">
-                    <div class="hero-text" style="display: flex; flex-direction: column; justify-content: center;">
+                    <div class="hero-text">
                         <span class="badge" id="hero-badge">No. 1 Trusted Matchmaking Service</span>
                         <h1 class="hero-title" id="hero-main-title">Crafting Perfect Matches, Creating Forever Stories</h1>
                         <p class="hero-subtitle">Find a life partner who shares your values, culture, and aspirations. Explore verified profiles with complete privacy control.</p>
-                        <div style="margin-top: 15px; margin-bottom: 25px; border-radius: var(--border-radius-md); overflow: hidden; border: 2px solid rgba(212,175,55,0.4); box-shadow: 0 15px 35px rgba(0,0,0,0.5); max-width: 480px; position: relative;">
-                            <img src="assets/images/hero_couple.png" alt="Indian Matrimony Couple" style="width: 100%; display: block; object-fit: cover; height: 280px; filter: brightness(0.95);">
-                            <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(26,0,6,0.9)); padding: 12px; text-align: center;">
-                                <span style="font-size: 13px; color: var(--accent); font-weight: 600; letter-spacing: 1px;">Begin Your Journey To Forever</span>
-                            </div>
-                        </div>
                         <div class="hero-cta-group">
                             <button class="btn btn-primary btn-large" id="btn-hero-start" onclick="switchView('auth', 'register')">Get Started For Free</button>
                             <button class="btn btn-secondary btn-large" id="btn-hero-browse" onclick="switchView('browse')">Browse Profiles</button>
@@ -253,6 +252,11 @@
         <!-- 2. AUTHENTICATION VIEW (LOGIN & SIGN UP) -->
         <section class="view-section hidden" id="auth-view">
             <div class="auth-card-container">
+                <div class="auth-slideshow" id="auth-bg-slideshow">
+                    <div class="auth-slide active" style="background-image: url('assets/images/hero_couple.png');"></div>
+                    <div class="auth-slide" style="background-image: url('assets/images/hero_couple_2.png');"></div>
+                    <div class="auth-slide" style="background-image: url('assets/images/hero_couple_3.png');"></div>
+                </div>
                 <div class="auth-card">
                     <div class="auth-tabs">
                         <button class="auth-tab-btn active" id="tab-btn-login" onclick="setAuthTab('login')">Sign In</button>

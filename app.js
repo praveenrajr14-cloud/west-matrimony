@@ -238,6 +238,9 @@ window.addEventListener("DOMContentLoaded", () => {
         });
     }
     
+    // Start background slideshow cycling
+    startBackgroundSlideshows();
+    
     // Close dropdowns when clicking outside
     window.addEventListener("click", (e) => {
         if (!e.target.closest(".user-profile-chip")) {
@@ -2400,4 +2403,29 @@ function toggleAdminStar(selectEl) {
         starGroup.classList.add("hidden");
         document.getElementById("admin-star").value = "None";
     }
+}
+
+function startBackgroundSlideshows() {
+    let heroIndex = 0;
+    let authIndex = 0;
+    
+    // Cycle hero slideshow
+    setInterval(() => {
+        const heroSlides = document.querySelectorAll("#hero-bg-slideshow .hero-slide");
+        if (heroSlides.length > 0) {
+            heroSlides[heroIndex].classList.remove("active");
+            heroIndex = (heroIndex + 1) % heroSlides.length;
+            heroSlides[heroIndex].classList.add("active");
+        }
+    }, 5000);
+    
+    // Cycle auth slideshow
+    setInterval(() => {
+        const authSlides = document.querySelectorAll("#auth-bg-slideshow .auth-slide");
+        if (authSlides.length > 0) {
+            authSlides[authIndex].classList.remove("active");
+            authIndex = (authIndex + 1) % authSlides.length;
+            authSlides[authIndex].classList.add("active");
+        }
+    }, 5000);
 }

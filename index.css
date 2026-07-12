@@ -444,9 +444,28 @@ textarea.form-control {
 .hero-section {
     position: relative;
     padding: 100px 0;
-    background: radial-gradient(circle at 10% 20%, rgb(128, 0, 32) 0%, rgb(40, 0, 10) 90.1%);
     color: var(--bg-white);
     overflow: hidden;
+    background-color: rgb(40, 0, 10);
+}
+
+.hero-slideshow {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 1;
+}
+
+.hero-slide {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-size: cover;
+    background-position: left center; /* Shift the couple to the left so they are fully visible */
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+}
+
+.hero-slide.active {
+    opacity: 0.95; /* Highly visible */
 }
 
 .hero-overlay {
@@ -455,9 +474,8 @@ textarea.form-control {
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(rgba(212, 175, 55, 0.1) 1px, transparent 1px);
-    background-size: 24px 24px;
-    opacity: 0.3;
+    background: linear-gradient(to right, rgba(26, 0, 6, 0.85) 35%, rgba(40, 0, 10, 0.3) 100%); /* Fades out to the right for clear image visibility */
+    z-index: 2;
 }
 
 .hero-content-wrapper {
@@ -870,9 +888,29 @@ textarea.form-control {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: radial-gradient(circle at 10% 20%, rgb(128, 0, 32) 0%, rgb(40, 0, 10) 90.1%);
+    background-color: rgb(40, 0, 10);
     position: relative;
     overflow: hidden;
+    min-height: 80vh;
+}
+
+.auth-slideshow {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 1;
+}
+
+.auth-slide {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+}
+
+.auth-slide.active {
+    opacity: 0.35;
 }
 
 .auth-card-container::before {
@@ -883,10 +921,11 @@ textarea.form-control {
     background-size: 24px 24px;
     opacity: 0.3;
     pointer-events: none;
+    z-index: 2;
 }
 
 .auth-card {
-    background: rgba(26, 0, 6, 0.75);
+    background: rgba(26, 0, 6, 0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(212, 175, 55, 0.25);
@@ -896,6 +935,8 @@ textarea.form-control {
     max-width: 550px;
     overflow: hidden;
     color: var(--bg-white);
+    position: relative;
+    z-index: 3;
 }
 
 .auth-tabs {
