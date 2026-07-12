@@ -1990,8 +1990,10 @@ async function loadSupabaseData() {
                 .single();
                 
             if (profile) {
+                const isAdminUser = profile.is_admin || (user.email && user.email.toLowerCase() === "admin@westmatrimony.com");
+                
                 // Admin Single-Session Lock Check
-                if (profile.is_admin) {
+                if (isAdminUser) {
                     const localSessId = localStorage.getItem("wm_admin_session_id");
                     if (profile.last_session_id && localSessId && profile.last_session_id !== localSessId) {
                         setTimeout(() => {
@@ -2025,7 +2027,7 @@ async function loadSupabaseData() {
                     prefAgeMax: profile.pref_age_max,
                     prefReligion: profile.pref_religion,
                     prefLocation: profile.pref_location,
-                    isAdmin: profile.is_admin
+                    isAdmin: isAdminUser
                 };
             } else {
                 state.currentUser = {
@@ -2257,6 +2259,8 @@ async function handleRegisterSubmitSupabase(newUser, email, password) {
         
         const user = authData.user;
         if (user) {
+            const isSystemAdmin = email.toLowerCase() === "admin@westmatrimony.com";
+            
             // Save to users_profiles
             const { error: profileError } = await supabaseClient
                 .from('users_profiles')
@@ -2280,14 +2284,14 @@ async function handleRegisterSubmitSupabase(newUser, email, password) {
                     pref_age_max: newUser.prefAgeMax,
                     pref_religion: newUser.prefReligion,
                     pref_location: newUser.prefLocation,
-                    is_admin: false
+                    is_admin: isSystemAdmin
                 });
                 
             if (profileError) {
                 console.error("Error creating Supabase user profile record:", profileError);
             }
             
-            state.currentUser = { ...newUser, id: user.id, isAdmin: false };
+            state.currentUser = { ...newUser, id: user.id, isAdmin: isSystemAdmin };
             updateHeaderAuthDOM();
             setupRealtimeMessages();
             loadChatMessages();
