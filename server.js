@@ -6,6 +6,11 @@ const PORT = process.env.PORT || 10000; // Render uses port 10000 by default or 
 // Serve static assets from the current directory
 app.use(express.static(path.join(__dirname)));
 
+// Health check ping endpoint to keep the server awake
+app.get('/ping', (req, res) => {
+    res.status(200).send('pong');
+});
+
 // Fallback to index.html for Single Page Application routing
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
