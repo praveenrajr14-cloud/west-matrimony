@@ -1394,9 +1394,9 @@
                 <div class="footer-column">
                     <h4>Trust & Security</h4>
                     <ul>
-                        <li><a href="#" onclick="event.preventDefault(); alert('Demo Privacy Policy')">Privacy Policy</a></li>
-                        <li><a href="#" onclick="event.preventDefault(); alert('Demo Terms of Use')">Terms of Use</a></li>
-                        <li><a href="#" onclick="event.preventDefault(); alert('Demo Safety Tips')">Safety Tips</a></li>
+                        <li><a href="#" onclick="event.preventDefault(); showPolicy('privacy')">Privacy Policy</a></li>
+                        <li><a href="#" onclick="event.preventDefault(); showPolicy('terms')">Terms of Use</a></li>
+                        <li><a href="#" onclick="event.preventDefault(); showPolicy('safety')">Safety Tips</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
@@ -1412,6 +1412,22 @@
             <p>&copy; 2026 West Matrimony Services. All rights reserved. Designed for elite matchmaking.</p>
         </div>
     </footer>
+
+    <!-- Trust & Safety Policy Modal -->
+    <div class="modal-overlay hidden" id="policy-modal" onclick="if(event.target === this) closePolicyModal()">
+        <div class="modal-card policy-modal-card">
+            <div class="modal-header" style="background-color: var(--primary); padding: 18px 24px; border-bottom: 2px solid var(--accent); display: flex; justify-content: space-between; align-items: center; position: relative;">
+                <h3 id="policy-modal-title" style="color: var(--accent); margin: 0; font-family: var(--font-serif); font-size: 1.4rem;">Privacy Policy</h3>
+                <button class="modal-close" onclick="closePolicyModal()" style="background: none; border: none; color: rgba(255,255,255,0.7); font-size: 28px; cursor: pointer; line-height: 1; transition: color 0.2s;">&times;</button>
+            </div>
+            <div class="modal-body policy-content" id="policy-modal-content" style="padding: 24px; max-height: 60vh; overflow-y: auto; color: var(--text-dark); background-color: var(--bg-white); line-height: 1.6; text-align: left;">
+                <!-- Content injected dynamically -->
+            </div>
+            <div class="modal-footer" style="padding: 16px 24px; background-color: var(--bg-light); border-top: 1px solid rgba(0,0,0,0.08); display: flex; justify-content: flex-end;">
+                <button class="btn btn-secondary" onclick="closePolicyModal()" style="padding: 10px 20px;">Close</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Floating WhatsApp Widget -->
     <a href="https://wa.me/919847695738?text=Hello%20West%20Matrimony%2C%20I%20would%20like%20to%20know%20more%20about%20your%20premium%20matchmaking%20services." class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">

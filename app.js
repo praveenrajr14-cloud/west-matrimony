@@ -2512,3 +2512,67 @@ function setupAdminSessionLock() {
         )
         .subscribe();
 }
+
+function showPolicy(type) {
+    const modal = document.getElementById("policy-modal");
+    const title = document.getElementById("policy-modal-title");
+    const content = document.getElementById("policy-modal-content");
+    
+    if (!modal || !title || !content) return;
+    
+    let html = "";
+    if (type === "privacy") {
+        title.textContent = "Privacy Policy";
+        html = `
+            <h4>1. Information Collection</h4>
+            <p>We collect information you provide directly during account registration, including your name, contact details, religion, caste, occupation, and photos. This is necessary to facilitate premium matchmaking.</p>
+            
+            <h4>2. Data Security & Encryption</h4>
+            <p>Your password and sensitive communications are encrypted and safely stored in secure servers on Supabase. We do not sell or lease your personal information to third parties.</p>
+            
+            <h4>3. Privacy Controls</h4>
+            <p>You have full control over who can view your contact information. Shortlisted matches and verified profiles can initiate conversations, while blocked users are instantly restricted from reaching you.</p>
+            
+            <h4>4. Account Deletion</h4>
+            <p>You have the right to request deletion of your account and all associated profile data at any time by contacting our support team at <a href="mailto:westmatrimoney64rm@gmail.com">westmatrimoney64rm@gmail.com</a>.</p>
+        `;
+    } else if (type === "terms") {
+        title.textContent = "Terms of Use";
+        html = `
+            <h4>1. Eligibility</h4>
+            <p>You must be of legal marriageable age according to the laws of India (18 years for females and 21 years for males) to register and use this matchmaking service.</p>
+            
+            <h4>2. Verification & Authenticity</h4>
+            <p>Users are expected to provide genuine, accurate information. While we run basic validation checks, we advise members to independently verify candidate backgrounds before proceeding with marriage alliances.</p>
+            
+            <h4>3. User Code of Conduct</h4>
+            <p>Any form of harassment, fake profile creation, commercial promotion, or offensive messaging will lead to immediate account suspension and IP ban without prior notice.</p>
+            
+            <h4>4. Single-Screen Limitation</h4>
+            <p>To prevent profile misuse and coordinate security, Administrator accounts are restricted to one active session at a time. Concurrent logins from multiple locations are automatically logged out.</p>
+        `;
+    } else if (type === "safety") {
+        title.textContent = "Safety Tips";
+        html = `
+            <h4>1. Meet in Public Places</h4>
+            <p>When meeting a prospective match for the first time, choose public places (like coffee shops or restaurants) during daytime. Never meet in secluded areas or private residences.</p>
+            
+            <h4>2. Keep Families Informed</h4>
+            <p>Always keep your family or close friends informed about your meetings and communication progress. Let them know where you are going and whom you are meeting.</p>
+            
+            <h4>3. Guard Your Financial Information</h4>
+            <p><strong>Crucial Warning:</strong> Never send money, deposit funds, or share bank account details with anyone you meet online, regardless of the reason or emergency they claim to have.</p>
+            
+            <h4>4. Report Suspicious Profiles</h4>
+            <p>If you notice any member asking for money, posting inappropriate content, or behaving suspiciously, immediately report them using the "Block & Report" option or contact support at <a href="https://wa.me/919847695738?text=Hello%20West%20Matrimony%2C%20I%20wish%20to%20report%20a%20profile.">+91 9847695738</a>.</p>
+        `;
+    }
+    
+    content.innerHTML = html;
+    modal.classList.remove("hidden");
+}
+
+function closePolicyModal() {
+    const modal = document.getElementById("policy-modal");
+    if (modal) modal.classList.add("hidden");
+}
