@@ -1862,11 +1862,6 @@ function setupAdminViewListeners() {
 function handleAdminFormSubmit(event) {
     event.preventDefault();
     
-    if (!adminPhotoBase64) {
-        showToast("Please upload a profile photo.", "danger");
-        return;
-    }
-    
     const name = document.getElementById("admin-name").value;
     const gender = document.getElementById("admin-gender").value;
     const age = parseInt(document.getElementById("admin-age").value);
@@ -1910,6 +1905,11 @@ function handleAdminFormSubmit(event) {
     // Generate unique ID
     const newId = `WM-${Math.floor(10000 + Math.random() * 90000)}`;
     
+    let imageSrc = adminPhotoBase64;
+    if (!imageSrc) {
+        imageSrc = gender === "female" ? "assets/images/profile_female_1.png" : "assets/images/profile_male_1.png";
+    }
+    
     const newProfile = {
         id: newId,
         name: name,
@@ -1926,7 +1926,7 @@ function handleAdminFormSubmit(event) {
         employer: employer,
         income: income,
         location: location,
-        image: adminPhotoBase64,
+        image: imageSrc,
         about: about,
         familyValues: familyValues,
         familyType: familyType,
@@ -2314,32 +2314,39 @@ async function handleRegisterSubmitSupabase(newUser, email, password) {
 }
 
 async function publishAdminProfileSupabase(newProfile) {
-    showToast("Uploading photo and publishing profile...", "info");
+    showToast("Publishing profile...", "info");
     
     try {
-        // Convert base64 to Blob uploader
-        const blob = base64ToBlob(newProfile.image, 'image/png');
-        const fileName = `${newProfile.id}.png`;
+        let finalImageUrl = newProfile.image;
         
-        // Upload photo
-        const { data: uploadData, error: uploadError } = await supabaseClient.storage
-            .from('profile-images')
-            .upload(fileName, blob, {
-                cacheControl: '3600',
-                upsert: true
-            });
+        // Only upload to storage if it's a newly uploaded base64 data URL
+        if (newProfile.image && newProfile.image.startsWith("data:")) {
+            showToast("Uploading profile photo...", "info");
+            const blob = base64ToBlob(newProfile.image, 'image/png');
+            const fileName = `${newProfile.id}.png`;
             
-        if (uploadError) {
-            showToast(`Photo upload failed: ${uploadError.message}`, "danger");
-            return;
+            // Upload photo
+            const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                .from('profile-images')
+                .upload(fileName, blob, {
+                    cacheControl: '3600',
+                    upsert: true
+                });
+                
+            if (uploadError) {
+                showToast(`Photo upload failed: ${uploadError.message}`, "danger");
+                return;
+            }
+            
+            // Retrieve public URL
+            const { data: { publicUrl } } = supabaseClient.storage
+                .from('profile-images')
+                .getPublicUrl(fileName);
+                
+            finalImageUrl = publicUrl;
         }
         
-        // Retrieve public URL
-        const { data: { publicUrl } } = supabaseClient.storage
-            .from('profile-images')
-            .getPublicUrl(fileName);
-            
-        newProfile.image = publicUrl;
+        newProfile.image = finalImageUrl;
         
         // Write record
         const { error: dbError } = await supabaseClient
