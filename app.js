@@ -1240,6 +1240,26 @@ function renderProfileDetailContent(profile, lang) {
     document.getElementById("detail-pref-education").textContent = isEn ? "Graduate or Post Graduate" : "ബിരുദം അല്ലെങ്കിൽ ബിരുദാനന്തര ബിരുദം";
     document.getElementById("detail-pref-profession").textContent = t(profile.prefOccupation);
     document.getElementById("detail-pref-location").textContent = t(profile.prefLocation);
+    
+    // Render phone
+    const phoneVal = profile.phone || (isEn ? "Not Provided" : "ലഭ്യമല്ല");
+    document.getElementById("detail-phone").textContent = phoneVal;
+    
+    // Toggle Admin Edit vs User Actions
+    const isAdmin = state.currentUser && state.currentUser.isAdmin;
+    const btnConnect = document.getElementById("btn-detail-connect");
+    const dualActions = document.getElementById("detail-user-actions-dual");
+    const btnAdminEdit = document.getElementById("btn-detail-admin-edit");
+    
+    if (isAdmin) {
+        if (btnConnect) btnConnect.style.display = "none";
+        if (dualActions) dualActions.style.display = "none";
+        if (btnAdminEdit) btnAdminEdit.style.display = "block";
+    } else {
+        if (btnConnect) btnConnect.style.display = "block";
+        if (dualActions) dualActions.style.display = "flex";
+        if (btnAdminEdit) btnAdminEdit.style.display = "none";
+    }
 }
 
 function setProfileTab(tabName) {
@@ -1840,6 +1860,7 @@ function showToast(message, type = "info") {
 
 // 18. ADMIN PROFILE CREATOR CONTROLLER
 let adminPhotoBase64 = "";
+let editingProfileId = null;
 
 function setupAdminViewListeners() {
     const photoInput = document.getElementById("admin-photo");
@@ -1866,6 +1887,7 @@ function handleAdminFormSubmit(event) {
     const gender = document.getElementById("admin-gender").value;
     const age = parseInt(document.getElementById("admin-age").value);
     const height = document.getElementById("admin-height").value;
+    const phone = document.getElementById("admin-phone").value.trim();
     const religion = document.getElementById("admin-religion").value;
     const caste = document.getElementById("admin-caste").value;
     const mothertongue = document.getElementById("admin-mothertongue").value;
@@ -1902,8 +1924,9 @@ function handleAdminFormSubmit(event) {
     const prefReligion = document.getElementById("admin-pref-religion").value;
     const prefLocation = document.getElementById("admin-pref-location").value;
     
-    // Generate unique ID
-    const newId = `WM-${Math.floor(10000 + Math.random() * 90000)}`;
+    // Generate or reuse ID
+    const isEditMode = editingProfileId !== null;
+    const profileId = isEditMode ? editingProfileId : `WM-${Math.floor(10000 + Math.random() * 90000)}`;
     
     let imageSrc = adminPhotoBase64;
     if (!imageSrc) {
@@ -1911,7 +1934,7 @@ function handleAdminFormSubmit(event) {
     }
     
     const newProfile = {
-        id: newId,
+        id: profileId,
         name: name,
         gender: gender,
         age: age,
@@ -1927,6 +1950,7 @@ function handleAdminFormSubmit(event) {
         income: income,
         location: location,
         image: imageSrc,
+        phone: phone,
         about: about,
         familyValues: familyValues,
         familyType: familyType,
@@ -1945,18 +1969,37 @@ function handleAdminFormSubmit(event) {
     };
     
     if (isBackendEnabled) {
-        publishAdminProfileSupabase(newProfile);
+        publishAdminProfileSupabase(newProfile, isEditMode);
         return;
     }
     
     // Save to localStorage list
     let savedCustom = localStorage.getItem("wm_custom_profiles");
     let customProfiles = savedCustom ? JSON.parse(savedCustom) : [];
-    customProfiles.push(newProfile);
-    localStorage.setItem("wm_custom_profiles", JSON.stringify(customProfiles));
     
-    // Add to active state profiles array
-    state.profiles.push(newProfile);
+    if (isEditMode) {
+        // Edit local memory & storage
+        const idx = state.profiles.findIndex(p => p.id === newProfile.id);
+        if (idx !== -1) state.profiles[idx] = newProfile;
+        
+        const cIdx = customProfiles.findIndex(p => p.id === newProfile.id);
+        if (cIdx !== -1) {
+            customProfiles[cIdx] = newProfile;
+            localStorage.setItem("wm_custom_profiles", JSON.stringify(customProfiles));
+        }
+        showToast("Profile updated successfully (local)!", "success");
+    } else {
+        // Insert new local memory & storage
+        customProfiles.push(newProfile);
+        localStorage.setItem("wm_custom_profiles", JSON.stringify(customProfiles));
+        state.profiles.push(newProfile);
+        showToast("Profile published successfully (local)!", "success");
+    }
+    
+    // Reset Edit Mode
+    editingProfileId = null;
+    const submitBtn = document.getElementById("btn-admin-create");
+    if (submitBtn) submitBtn.textContent = "Publish Profile";
     
     // Reset form and variables
     document.getElementById("admin-create-profile-form").reset();
@@ -1967,6 +2010,114 @@ function handleAdminFormSubmit(event) {
     
     // Redirect to browse view
     switchView("browse");
+}
+
+function startEditingProfile() {
+    const profileId = state.activeProfileDetail;
+    if (!profileId) return;
+    
+    const profile = state.profiles.find(p => p.id === profileId);
+    if (!profile) return;
+    
+    editingProfileId = profileId;
+    
+    // Switch to Admin view
+    switchView("admin");
+    
+    // Populate form fields
+    document.getElementById("admin-name").value = profile.name;
+    document.getElementById("admin-gender").value = profile.gender;
+    document.getElementById("admin-age").value = profile.age;
+    document.getElementById("admin-height").value = profile.height;
+    document.getElementById("admin-phone").value = profile.phone || "";
+    document.getElementById("admin-religion").value = profile.religion;
+    document.getElementById("admin-caste").value = profile.caste;
+    
+    // Star toggle
+    const starSelect = document.getElementById("admin-star");
+    if (profile.religion === "Hindu") {
+        document.getElementById("admin-star-group").classList.remove("hidden");
+        starSelect.value = profile.star || "None";
+    } else {
+        document.getElementById("admin-star-group").classList.add("hidden");
+        starSelect.value = "None";
+    }
+    
+    // Mother tongue
+    document.getElementById("admin-mothertongue").value = profile.mothertongue;
+    
+    // Location
+    const locSelect = document.getElementById("admin-location");
+    const customLocGroup = document.getElementById("admin-location-custom-group");
+    const customLocInput = document.getElementById("admin-location-custom");
+    const cities = ["Kochi", "Trivandrum", "Kozhikode", "Thrissur", "Kollam", "Alappuzha", "Palakkad", "Kottayam", "Kannur"];
+    if (cities.includes(profile.location)) {
+        locSelect.value = profile.location;
+        customLocGroup.classList.add("hidden");
+        customLocInput.value = "";
+    } else {
+        locSelect.value = "Others";
+        customLocGroup.classList.remove("hidden");
+        customLocInput.value = profile.location;
+    }
+    
+    // Career/Edu
+    document.getElementById("admin-education").value = profile.education;
+    document.getElementById("admin-college").value = profile.college;
+    
+    // Profession
+    const profSelect = document.getElementById("admin-profession");
+    const customProfGroup = document.getElementById("admin-profession-custom-group");
+    const customProfInput = document.getElementById("admin-profession-custom");
+    const professions = ["Software Engineer", "Doctor / Medical", "Banker / Finance", "Teacher / Professor", "Business Owner", "Civil Servant", "Engineer (Mech/Civil)", "Nurse / Healthcare"];
+    if (professions.includes(profile.occupation)) {
+        profSelect.value = profile.occupation;
+        customProfGroup.classList.add("hidden");
+        customProfInput.value = "";
+    } else {
+        profSelect.value = "Others";
+        customProfGroup.classList.remove("hidden");
+        customProfInput.value = profile.occupation;
+    }
+    
+    document.getElementById("admin-employer").value = profile.employer || "";
+    document.getElementById("admin-income").value = profile.income || "";
+    document.getElementById("admin-diet").value = profile.diet || "Non-Vegetarian";
+    document.getElementById("admin-about").value = profile.about || "";
+    
+    // Family
+    document.getElementById("admin-family-values").value = profile.familyValues || "Moderate";
+    document.getElementById("admin-family-type").value = profile.familyType || "Nuclear Family";
+    document.getElementById("admin-father").value = profile.father || "";
+    document.getElementById("admin-mother").value = profile.mother || "";
+    
+    // Partner Expectations
+    document.getElementById("admin-pref-age-min").value = profile.prefAgeMin || 20;
+    document.getElementById("admin-pref-age-max").value = profile.prefAgeMax || 45;
+    document.getElementById("admin-pref-religion").value = profile.prefReligion || "all";
+    document.getElementById("admin-pref-location").value = profile.prefLocation || "all";
+    
+    // Image Preview
+    const imgPreview = document.getElementById("admin-photo-preview");
+    const imgPreviewContainer = document.getElementById("admin-photo-preview-container");
+    if (profile.image) {
+        imgPreview.src = profile.image;
+        imgPreviewContainer.classList.remove("hidden");
+        adminPhotoBase64 = profile.image;
+    } else {
+        imgPreview.src = "";
+        imgPreviewContainer.classList.add("hidden");
+        adminPhotoBase64 = "";
+    }
+    
+    // Update Submit button text
+    const submitBtn = document.getElementById("btn-admin-create");
+    if (submitBtn) {
+        submitBtn.textContent = `Update Profile (${profileId})`;
+    }
+    
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // =========================================================================
@@ -2313,7 +2464,7 @@ async function handleRegisterSubmitSupabase(newUser, email, password) {
     }
 }
 
-async function publishAdminProfileSupabase(newProfile) {
+async function publishAdminProfileSupabase(newProfile, isEditMode = false) {
     showToast("Publishing profile...", "info");
     
     try {
@@ -2348,54 +2499,108 @@ async function publishAdminProfileSupabase(newProfile) {
         
         newProfile.image = finalImageUrl;
         
-        // Write record
-        const { error: dbError } = await supabaseClient
-            .from('profiles')
-            .insert({
-                id: newProfile.id,
-                name: newProfile.name,
-                gender: newProfile.gender,
-                age: newProfile.age,
-                height: newProfile.height,
-                religion: newProfile.religion,
-                caste: newProfile.caste,
-                star: newProfile.star || "None",
-                mothertongue: newProfile.mothertongue,
-                education: newProfile.education,
-                college: newProfile.college,
-                occupation: newProfile.occupation,
-                employer: newProfile.employer,
-                income: newProfile.income,
-                location: newProfile.location,
-                image: publicUrl,
-                about: newProfile.about,
-                family_values: newProfile.familyValues,
-                family_type: newProfile.familyType,
-                father: newProfile.father,
-                mother: newProfile.mother,
-                diet: newProfile.diet,
-                lifestyle: newProfile.lifestyle,
-                pref_age_min: newProfile.prefAgeMin,
-                pref_age_max: newProfile.prefAgeMax,
-                pref_height: newProfile.prefHeight,
-                pref_religion: newProfile.prefReligion,
-                pref_occupation: newProfile.prefOccupation,
-                pref_location: newProfile.prefLocation
-            });
+        if (isEditMode) {
+            // Update record
+            const { error: dbError } = await supabaseClient
+                .from('profiles')
+                .update({
+                    name: newProfile.name,
+                    gender: newProfile.gender,
+                    age: newProfile.age,
+                    height: newProfile.height,
+                    religion: newProfile.religion,
+                    caste: newProfile.caste,
+                    star: newProfile.star || "None",
+                    mothertongue: newProfile.mothertongue,
+                    education: newProfile.education,
+                    college: newProfile.college,
+                    occupation: newProfile.occupation,
+                    employer: newProfile.employer,
+                    income: newProfile.income,
+                    location: newProfile.location,
+                    image: newProfile.image,
+                    phone: newProfile.phone,
+                    about: newProfile.about,
+                    family_values: newProfile.familyValues,
+                    family_type: newProfile.familyType,
+                    father: newProfile.father,
+                    mother: newProfile.mother,
+                    diet: newProfile.diet,
+                    pref_age_min: newProfile.prefAgeMin,
+                    pref_age_max: newProfile.prefAgeMax,
+                    pref_religion: newProfile.prefReligion,
+                    pref_location: newProfile.prefLocation
+                })
+                .eq('id', newProfile.id);
+                
+            if (dbError) {
+                showToast(`Profile update failed: ${dbError.message}`, "danger");
+                return;
+            }
             
-        if (dbError) {
-            showToast(`Publish failed: ${dbError.message}`, "danger");
-            return;
+            // Update local memory cache
+            const idx = state.profiles.findIndex(p => p.id === newProfile.id);
+            if (idx !== -1) {
+                state.profiles[idx] = newProfile;
+            }
+            
+            // Reset Edit Mode
+            editingProfileId = null;
+            const submitBtn = document.getElementById("btn-admin-create");
+            if (submitBtn) submitBtn.textContent = "Publish Profile";
+            
+            showToast(`Profile for ${newProfile.name} updated successfully!`, "success");
+            
+        } else {
+            // Write new record
+            const { error: dbError } = await supabaseClient
+                .from('profiles')
+                .insert({
+                    id: newProfile.id,
+                    name: newProfile.name,
+                    gender: newProfile.gender,
+                    age: newProfile.age,
+                    height: newProfile.height,
+                    religion: newProfile.religion,
+                    caste: newProfile.caste,
+                    star: newProfile.star || "None",
+                    mothertongue: newProfile.mothertongue,
+                    education: newProfile.education,
+                    college: newProfile.college,
+                    occupation: newProfile.occupation,
+                    employer: newProfile.employer,
+                    income: newProfile.income,
+                    location: newProfile.location,
+                    image: newProfile.image,
+                    phone: newProfile.phone,
+                    about: newProfile.about,
+                    family_values: newProfile.familyValues,
+                    family_type: newProfile.familyType,
+                    father: newProfile.father,
+                    mother: newProfile.mother,
+                    diet: newProfile.diet,
+                    lifestyle: newProfile.lifestyle,
+                    pref_age_min: newProfile.prefAgeMin,
+                    pref_age_max: newProfile.prefAgeMax,
+                    pref_height: newProfile.prefHeight,
+                    pref_religion: newProfile.prefReligion,
+                    pref_occupation: newProfile.prefOccupation,
+                    pref_location: newProfile.prefLocation
+                });
+                
+            if (dbError) {
+                showToast(`Publish failed: ${dbError.message}`, "danger");
+                return;
+            }
+            
+            state.profiles.push(newProfile);
+            showToast(`Profile for ${newProfile.name} published live!`, "success");
         }
         
-        state.profiles.push(newProfile);
-        
-        // Clear uploader preview
+        // Clear uploader preview and reset form
         document.getElementById("admin-create-profile-form").reset();
         document.getElementById("admin-photo-preview-container").classList.add("hidden");
         adminPhotoBase64 = "";
-        
-        showToast(`Profile for ${newProfile.name} published live!`, "success");
         switchView("browse");
     } catch (e) {
         showToast("Publishing profile failed: connection error.", "danger");

@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
     location TEXT NOT NULL,
     star TEXT DEFAULT 'None', -- Star / Nakshatram (specifically for Hindu profiles)
     image TEXT NOT NULL, -- Storage URL or local asset path
+    phone TEXT, -- Contact phone number for profile
     about TEXT NOT NULL,
     family_values TEXT NOT NULL,
     family_type TEXT NOT NULL,
@@ -91,47 +92,6 @@ CREATE TABLE IF NOT EXISTS public.messages (
 
 -- Enable real-time updates for messages (Crucial for realtime live chats!)
 ALTER TABLE public.messages REPLICA IDENTITY FULL;
-
--- =========================================================================
--- 2. INSERT INITIAL MOCK DATA
--- =========================================================================
-
-INSERT INTO public.profiles (
-    id, name, gender, age, height, religion, caste, mothertongue, 
-    education, college, occupation, employer, income, location, 
-    image, about, family_values, family_type, father, mother, 
-    brothers, sisters, diet, lifestyle, pref_age_min, pref_age_max, 
-    pref_height, pref_religion, pref_occupation, pref_location
-) VALUES 
-(
-    'WM-10294', 'Sophia Ann Abraham', 'female', 25, '5 ft 4 in (162 cm)', 'Christian', 'Syrian Orthodox', 'Malayalam',
-    'B.Tech in Computer Science', 'College of Engineering Trivandrum (CET)', 'Software Engineer', 'TCS Kochi', '₹12 - 15 Lakhs', 'Kochi',
-    'assets/images/profile_female_1.png', 'A cheerful, career-oriented individual who balances traditional values with a modern outlook. She loves listening to music, traveling, and exploring new cuisines on weekends.',
-    'Moderate', 'Nuclear Family', 'Retired Government Officer', 'High School Teacher',
-    1, 0, 'Non-Vegetarian', 'No / No', 26, 30, '5 ft 7 in', 'Christian', 'IT Professional or Doctor', 'Kochi, Bangalore'
-),
-(
-    'WM-28190', 'Rahul Sharma', 'male', 29, '5 ft 10 in (178 cm)', 'Hindu', 'Brahmin', 'Hindi',
-    'MBA in Business Analytics', 'IIM Bangalore', 'Software Engineer', 'Microsoft Bangalore', '₹24+ Lakhs', 'Bangalore',
-    'assets/images/profile_male_1.png', 'A simple, down-to-earth person who believes in mutual respect and clear communication. I enjoy working on fintech trends, reading historical fiction, and trekking in the Western Ghats.',
-    'Traditional', 'Joint Family', 'Business Owner', 'Homemaker',
-    0, 1, 'Vegetarian', 'No / No', 23, 28, '5 ft 2 in', 'Hindu', 'Graduate Professional', 'Bangalore, Kochi'
-),
-(
-    'WM-40192', 'Priya Iyer', 'female', 26, '5 ft 2 in (157 cm)', 'Hindu', 'Tamil Brahmin', 'Tamil',
-    'B.Des in Product Design', 'NID Ahmedabad', 'UI/UX Designer', 'Freelancer / Startup Consultant', '₹15 - 18 Lakhs', 'Chennai',
-    'assets/images/profile_female_2.png', 'A creative mind who loves visual arts, classical music, and visiting heritage spots. Looking for a partner who is passionate about their work and values art and culture.',
-    'Liberal', 'Nuclear Family', 'Senior Advocate', 'Carnatic Vocalist',
-    1, 0, 'Vegetarian', 'Occasional / No', 26, 32, '5 ft 6 in', 'Hindu', 'Creative or Tech Professional', 'Chennai, Bangalore, Kochi'
-),
-(
-    'WM-89102', 'Ahaan Patel', 'male', 28, '5 ft 8 in (173 cm)', 'Hindu', 'Patel', 'Hindi',
-    'M.Com & Chartered Accountant', 'HR College Mumbai', 'Banker', 'HDFC Bank Mumbai', '₹18 - 22 Lakhs', 'Mumbai',
-    'assets/images/profile_male_2.png', 'An ambitious banker who balances a busy professional life with hobbies like squash, culinary experimentation, and volunteering. Looking for a partner who is independent and family-focused.',
-    'Moderate', 'Nuclear Family', 'Chartered Accountant', 'Interior Designer',
-    0, 0, 'Non-Vegetarian', 'No / No', 24, 28, '5 ft 3 in', 'Hindu', 'Finance, Banking or IT Analyst', 'Mumbai, Bangalore'
-)
-ON CONFLICT (id) DO NOTHING;
 
 -- =========================================================================
 -- 3. STORAGE INTEGRATION FOR PHOTOS
