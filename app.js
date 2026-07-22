@@ -1116,16 +1116,16 @@ function renderProfileDetailContent(profile, lang) {
     const isAdmin = state.currentUser && state.currentUser.isAdmin;
     const btnConnect = document.getElementById("btn-detail-connect");
     const dualActions = document.getElementById("detail-user-actions-dual");
-    const btnAdminEdit = document.getElementById("btn-detail-admin-edit");
+    const adminActionGroup = document.getElementById("admin-action-buttons-group");
     
     if (isAdmin) {
         if (btnConnect) btnConnect.style.display = "none";
         if (dualActions) dualActions.style.display = "none";
-        if (btnAdminEdit) btnAdminEdit.style.display = "block";
+        if (adminActionGroup) adminActionGroup.style.display = "flex";
     } else {
         if (btnConnect) btnConnect.style.display = "block";
         if (dualActions) dualActions.style.display = "flex";
-        if (btnAdminEdit) btnAdminEdit.style.display = "none";
+        if (adminActionGroup) adminActionGroup.style.display = "none";
     }
 }
 
@@ -1999,6 +1999,53 @@ function removeAdminPhoto() {
     
     adminPhotoBase64 = "";
     showToast("Photo removed.", "info");
+}
+
+async function deletePublishedProfile() {
+    const profileId = state.activeProfileDetail;
+    if (!profileId) return;
+    
+    if (!confirm(`Are you sure you want to permanently delete profile ${profileId}? This action cannot be undone.`)) return;
+    
+    showToast("Deleting profile...", "info");
+    
+    if (isBackendEnabled) {
+        try {
+            // 1. Delete from Supabase profiles table
+            const { error: dbError } = await supabaseClient
+                .from('profiles')
+                .delete()
+                .eq('id', profileId);
+                
+            if (dbError) {
+                showToast(`Failed to delete profile from database: ${dbError.message}`, "danger");
+                return;
+            }
+            
+            // 2. Attempt to delete photo from storage (matches ID + .png extension)
+            await supabaseClient.storage
+                .from('profile-images')
+                .remove([`${profileId}.png`]);
+                
+        } catch (e) {
+            showToast(`Delete failed: ${e.message || e}`, "danger");
+            return;
+        }
+    } else {
+        // Local storage fallback path
+        let savedCustom = localStorage.getItem("wm_custom_profiles");
+        let customProfiles = savedCustom ? JSON.parse(savedCustom) : [];
+        customProfiles = customProfiles.filter(p => p.id !== profileId);
+        localStorage.setItem("wm_custom_profiles", JSON.stringify(customProfiles));
+    }
+    
+    // 3. Remove from local memory cache
+    state.profiles = state.profiles.filter(p => p.id !== profileId);
+    
+    showToast("Profile deleted successfully!", "success");
+    
+    // 4. Return to search browseMatches list
+    switchView("browse");
 }
 
 // =========================================================================

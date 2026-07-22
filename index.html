@@ -730,13 +730,22 @@
                                 </button>
                             </div>
                             
-                            <!-- Admin edit button -->
-                            <button class="btn btn-block" id="btn-detail-admin-edit" onclick="startEditingProfile()" style="background-color: var(--accent); color: var(--primary); font-weight: 700; margin-top: 10px; display: none;">
-                                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" style="vertical-align: middle; margin-right: 6px;">
-                                    <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                                </svg>
-                                Edit Profile Details
-                            </button>
+                            <!-- Admin edit & delete button group -->
+                            <div id="admin-action-buttons-group" style="display: none; flex-direction: column; gap: 10px; margin-top: 10px; width: 100%;">
+                                <button class="btn btn-block" id="btn-detail-admin-edit" onclick="startEditingProfile()" style="background-color: var(--accent); color: var(--primary); font-weight: 700; width: 100%;">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" style="vertical-align: middle; margin-right: 6px;">
+                                        <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                                    </svg>
+                                    Edit Profile Details
+                                </button>
+                                <button class="btn btn-block" id="btn-detail-admin-delete" onclick="deletePublishedProfile()" style="background-color: var(--danger); color: var(--bg-white); font-weight: 700; border-color: var(--danger); width: 100%;">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" style="vertical-align: middle; margin-right: 6px;">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                    Delete Profile
+                                </button>
+                            </div>
                         </div>
                     </div>
                     
