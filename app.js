@@ -2120,6 +2120,20 @@ function startEditingProfile() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function removeAdminPhoto() {
+    const photoInput = document.getElementById("admin-photo");
+    if (photoInput) photoInput.value = "";
+    
+    const imgPreview = document.getElementById("admin-photo-preview");
+    if (imgPreview) imgPreview.src = "";
+    
+    const previewContainer = document.getElementById("admin-photo-preview-container");
+    if (previewContainer) previewContainer.classList.add("hidden");
+    
+    adminPhotoBase64 = "";
+    showToast("Photo removed.", "info");
+}
+
 // =========================================================================
 // 19. SUPABASE BACKEND CONTROLLER HELPER FUNCTIONS
 // =========================================================================
@@ -2603,7 +2617,8 @@ async function publishAdminProfileSupabase(newProfile, isEditMode = false) {
         adminPhotoBase64 = "";
         switchView("browse");
     } catch (e) {
-        showToast("Publishing profile failed: connection error.", "danger");
+        console.error("Publishing profile error details:", e);
+        showToast(`Publishing profile failed: ${e.message || e}`, "danger");
     }
 }
 

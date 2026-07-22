@@ -2587,3 +2587,50 @@ textarea.form-control {
         transform: translateY(0);
     }
 }
+
+/* Global Mobile Layout Alignment Fixes */
+html, body {
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+}
+
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column !important;
+        gap: 32px !important;
+        padding: 0 16px !important;
+    }
+    
+    .footer-links-grid {
+        flex-direction: column !important;
+        gap: 24px !important;
+        width: 100% !important;
+    }
+    
+    .footer-column {
+        width: 100% !important;
+    }
+    
+    .header-container {
+        padding: 0 16px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo-text {
+        font-size: 1.2rem !important;
+    }
+    
+    .logo-icon {
+        width: 32px !important;
+        height: 32px !important;
+    }
+    
+    .user-chip-name {
+        display: none !important;
+    }
+    
+    .user-profile-chip {
+        padding: 4px 6px !important;
+    }
+}
