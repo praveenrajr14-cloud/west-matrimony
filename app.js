@@ -343,6 +343,38 @@ function renderFeaturedProfiles() {
     });
 }
 
+function getProfileImageHTML(profile, sizeType = "card") {
+    const hasImage = profile.image && profile.image.trim() !== "" && 
+                     !profile.image.includes("profile_female_1.png") && 
+                     !profile.image.includes("profile_male_1.png") && 
+                     !profile.image.includes("profile_male_2.png") && 
+                     !profile.image.includes("profile_female_2.png");
+                     
+    if (hasImage) {
+        if (sizeType === "inbox") {
+            return `<img src="${profile.image}" alt="${profile.name}" class="inbox-avatar">`;
+        }
+        return `<img src="${profile.image}" alt="${profile.name}">`;
+    }
+    
+    const initial = profile.name ? profile.name.charAt(0).toUpperCase() : "?";
+    
+    if (sizeType === "inbox") {
+        return `
+            <div class="inbox-avatar blank-avatar-placeholder" style="display:flex; align-items:center; justify-content:center; background:#e2e8f0; color:#475569; font-weight:700; font-size:1.1rem; border-radius:50%; text-transform:uppercase; width:45px; height:45px; flex-shrink:0;">
+                <span>${initial}</span>
+            </div>
+        `;
+    }
+    
+    const fontSize = sizeType === "detail" ? "5rem" : "3.5rem";
+    return `
+        <div class="blank-avatar-placeholder" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#888888; font-weight:700; text-transform:uppercase; font-size:${fontSize}; background:#eaeaea;">
+            <span>${initial}</span>
+        </div>
+    `;
+}
+
 // Helper to create general Profile Card DOM
 function createProfileCardDOM(profile, isLanding = false) {
     const card = document.createElement("div");
@@ -359,7 +391,7 @@ function createProfileCardDOM(profile, isLanding = false) {
     
     card.innerHTML = `
         <div class="card-img-wrapper ${blurClass}">
-            <img src="${profile.image}" alt="${profile.name}">
+            ${getProfileImageHTML(profile, "card")}
             <span class="card-badge">${profile.religion}</span>
             ${isLoggedIn ? `<span class="compatibility-badge">${score}% Match</span>` : ""}
         </div>
@@ -637,7 +669,7 @@ function renderDashboard() {
             
             card.innerHTML = `
                 <div class="card-img-wrapper">
-                    <img src="${profile.image}" alt="${profile.name}">
+                    ${getProfileImageHTML(profile, "card")}
                     <span class="card-badge">${profile.religion}</span>
                     <span class="compatibility-badge">${score}% Match</span>
                 </div>
@@ -784,7 +816,32 @@ function viewProfileDetail(profileId) {
     switchView("detail");
     
     // Fill left card photo & status details
-    document.getElementById("detail-profile-img").src = profile.image;
+    const hasImage = profile.image && profile.image.trim() !== "" && 
+                     !profile.image.includes("profile_female_1.png") && 
+                     !profile.image.includes("profile_male_1.png") && 
+                     !profile.image.includes("profile_male_2.png") && 
+                     !profile.image.includes("profile_female_2.png");
+                     
+    const imgEl = document.getElementById("detail-profile-img");
+    const placeholderEl = document.getElementById("detail-profile-placeholder");
+    const initialEl = document.getElementById("detail-profile-placeholder-initial");
+    
+    if (hasImage) {
+        if (imgEl) {
+            imgEl.src = profile.image;
+            imgEl.classList.remove("hidden");
+        }
+        if (placeholderEl) placeholderEl.classList.add("hidden");
+    } else {
+        if (imgEl) {
+            imgEl.src = "";
+            imgEl.classList.add("hidden");
+        }
+        if (placeholderEl) {
+            placeholderEl.classList.remove("hidden");
+            if (initialEl) initialEl.textContent = profile.name ? profile.name.charAt(0).toUpperCase() : "?";
+        }
+    }
     
     // Math Compatibility Gauge
     const score = calculateCompatibilityScore(state.currentUser, profile);
@@ -1381,7 +1438,7 @@ function renderInterestsTab() {
                 card.className = "profile-card";
                 card.innerHTML = `
                     <div class="card-img-wrapper">
-                        <img src="${profile.image}" alt="${profile.name}">
+                        ${getProfileImageHTML(profile, "card")}
                         <span class="card-badge">${profile.religion}</span>
                     </div>
                     <div class="card-body">
@@ -1429,7 +1486,7 @@ function renderChatsTab() {
         item.onclick = () => selectInboxChat(id);
         
         item.innerHTML = `
-            <img src="${profile.image}" alt="${profile.name}" class="inbox-avatar">
+            ${getProfileImageHTML(profile, "inbox")}
             <div class="inbox-info">
                 <div class="inbox-name-row">
                     <span class="inbox-name">${profile.name.split(" ")[0]}</span>
@@ -1795,10 +1852,7 @@ function handleAdminFormSubmit(event) {
     const isEditMode = editingProfileId !== null;
     const profileId = isEditMode ? editingProfileId : `WM-${Math.floor(10000 + Math.random() * 90000)}`;
     
-    let imageSrc = adminPhotoBase64;
-    if (!imageSrc) {
-        imageSrc = gender === "female" ? "assets/images/profile_female_1.png" : "assets/images/profile_male_1.png";
-    }
+    let imageSrc = adminPhotoBase64 || "";
     
     const newProfile = {
         id: profileId,
