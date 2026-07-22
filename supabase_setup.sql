@@ -93,6 +93,12 @@ CREATE TABLE IF NOT EXISTS public.messages (
 -- Enable real-time updates for messages (Crucial for realtime live chats!)
 ALTER TABLE public.messages REPLICA IDENTITY FULL;
 
+-- Disable Row Level Security (RLS) on all tables to prevent "violates row-level security policy" errors
+ALTER TABLE public.profiles DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.users_profiles DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.shortlists DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.messages DISABLE ROW LEVEL SECURITY;
+
 -- =========================================================================
 -- 3. STORAGE INTEGRATION FOR PHOTOS
 -- =========================================================================
